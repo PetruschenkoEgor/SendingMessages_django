@@ -3,7 +3,7 @@ from django.db import models
 
 class Recipient(models.Model):
     """ Получатель рассылки """
-    email = models.EmailField(verbose_name='Email', help_text='Введите Email')
+    email = models.EmailField(verbose_name='Email получателя', help_text='Введите Email')
     fio = models.CharField(max_length=300, verbose_name='Ф.И.О.', help_text='Введите фамилию, имя, отчество')
     comment = models.TextField(verbose_name='Комментарий', help_text='Введите комментарий', blank=True, null=True)
 
@@ -49,7 +49,7 @@ class Mailing(models.Model):
         ordering = ['date_time_first_shipment', 'status',]
 
     def __str__(self):
-        return f'{self.date_time_first_shipment} - {self.status}'
+        return f'{self.name} - {self.status}'
 
 
 class AttemptMailing(models.Model):
@@ -71,3 +71,10 @@ class AttemptMailing(models.Model):
 
     def __str__(self):
         return f'{self.date_time_attempt} - {self.status}'
+
+
+class Sender(models.Model):
+    """ Отправитель """
+    name = models.CharField(max_length=250, verbose_name='Имя отправителя', help_text='Введите имя отправителя', blank=True, null=True)
+    email = models.EmailField(verbose_name='Email отправителя', help_text='Введите email отправителя')
+    organization = models.CharField(max_length=300, verbose_name='Организация', help_text='Введите название организации', blank=True, null=True)
