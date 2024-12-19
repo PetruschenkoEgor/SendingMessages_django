@@ -38,6 +38,12 @@ class RecipientForm(StyleFormMixin, ModelForm):
         model = Recipient
         fields = '__all__'
 
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['email'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['fio'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['comment'].widget.attrs.update({'class': 'form-control'})
+
 
 class MailingForm(StyleFormMixin, ModelForm):
     """ Форма для рассылки """
