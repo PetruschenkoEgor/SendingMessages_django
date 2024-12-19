@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView, DetailView, ListView
+from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView
 
 from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm
 from sending_messages.models import Mailing, Sender, Message, Recipient, AttemptMailing
@@ -39,6 +39,19 @@ class SenderCreateView(CreateView):
         return sender
 
 
+class SenderUpdateView(UpdateView):
+    """ Редактирование отправителя """
+
+    model = Sender
+    form_class = SenderForm
+    template_name = 'mailing1.html'
+
+    def get_success_url(self):
+        """ Перенаправление пользователя на ту страницу, с которой он пришел """
+        next_url = self.request.GET.get('next', reverse_lazy('sending_messages:add_sending'))
+        return next_url
+
+
 class MessageCreateView(CreateView):
     """ Создание рассылки - письмо(2) """
 
@@ -54,6 +67,21 @@ class MessageCreateView(CreateView):
         # сохраняет ид созданного объекта в сессии для использования на следующем этапе
         self.request.session['message_id'] = self.object.id
         return message
+
+
+class MessageUpdateView(UpdateView):
+    """ Редактирование письма """
+
+    model = Message
+    form_class = MessageForm
+    template_name = 'mailing2.html'
+
+    def get_success_url(self):
+        """ Перенаправление пользователя на ту страницу, с которой он пришел """
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('sending_messages:add_sending')
 
 
 class RecipientCreateView(CreateView):
@@ -74,6 +102,15 @@ class RecipientCreateView(CreateView):
         # сохраняет ид созданного объекта в сессии для использования на следующем этапе
         self.request.session['recipient_ids'] = recipient_ids
         return recipient
+
+
+class RecipientUpdateView(UpdateView):
+    """ Редактирование получателя """
+
+    model = Recipient
+    form_class = RecipientForm
+    template_name = 'mailing3.html'
+    success_url = reverse_lazy('sending_messages:add_sending')
 
 
 class SendingCreateView(CreateView):

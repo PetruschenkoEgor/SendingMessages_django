@@ -50,4 +50,4 @@ class MailingForm(StyleFormMixin, ModelForm):
 
     class Meta:
         model = Mailing
-        fields = '__all__'
+        exclude = ('status',)

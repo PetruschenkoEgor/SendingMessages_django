@@ -2,7 +2,7 @@ from django.urls import path
 from sending_messages.apps import SendingMessagesConfig
 from sending_messages.views import MailingTemplateView, SenderCreateView, MessageCreateView, RecipientCreateView, \
     SendingCreateView, MailingsListView, MailingsActiveListView, RecipientListView, MailingDetailView, \
-    RecipientDetailView
+    RecipientDetailView, SenderUpdateView, MessageUpdateView, RecipientUpdateView
 
 app_name = SendingMessagesConfig.name
 
@@ -17,4 +17,7 @@ urlpatterns = [
     path('recipients/', RecipientListView.as_view(), name='recipient_list'),
     path('mailing/<int:pk>/', MailingDetailView.as_view(), name='mailing_detail'),
     path('recipient/<int:pk>/', RecipientDetailView.as_view(), name='recipient_detail'),
+    path('sender/<int:pk>/edit/', SenderUpdateView.as_view(), name='edit_sender'),
+    path('message/<int:pk>/edit/', MessageUpdateView.as_view(), name='edit_message'),
+    path('recipient/<int:pk>/edit/', RecipientUpdateView.as_view(), name='edit_recipient'),
 ]
