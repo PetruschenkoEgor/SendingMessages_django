@@ -18,6 +18,7 @@ class MailingTemplateView(TemplateView):
         context = super().get_context_data()
         context['mailings'] = Mailing.objects.count()
         context['mailings_activ'] = Mailing.objects.filter(status='Запущена').count()
+        context['recipients'] = Recipient.objects.all().count()
         return context
 
 
@@ -166,3 +167,10 @@ class MailingsActiveListView(ListView):
         if self.get_queryset().count() > self.paginate_by:
             context['show_pagination'] = True
         return context
+
+
+class RecipientListView(ListView):
+    """ Список получателей """
+    model = Recipient
+    template_name = 'recipient_list.html'
+    context_object_name = 'recipients'

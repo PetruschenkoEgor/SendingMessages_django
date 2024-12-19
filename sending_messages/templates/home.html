@@ -78,8 +78,8 @@
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <a href="{% url 'sending_messages:home' %}" class="nav-link px-2 link-body-emphasis">
-              <p class="h4">Количество уникальных получателей: 0</p>
+            <a href="{% url 'sending_messages:recipient_list' %}" class="nav-link px-2 link-body-emphasis">
+              <p class="h4">Количество уникальных получателей: {{ recipients }}</p>
             </a>
           </div>
         </div>
