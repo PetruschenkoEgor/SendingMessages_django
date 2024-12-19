@@ -17,7 +17,7 @@ class MailingTemplateView(TemplateView):
 
         context = super().get_context_data()
         context['mailings'] = Mailing.objects.count()
-        context['mailings_activ'] = Mailing.objects.filter(status='Запущена').count()
+        context['mailings_active'] = Mailing.objects.filter(status='Запущена').count()
         context['recipients'] = Recipient.objects.all().count()
         return context
 
@@ -62,7 +62,7 @@ class RecipientCreateView(CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = 'mailing3.html'
-    success_url = reverse_lazy('sending_messages:sending')
+    success_url = reverse_lazy('sending_messages:add_sending')
 
     def form_valid(self, form):
         """ Сохраняет объект в БД и записывает его ид в сессии """
@@ -167,6 +167,13 @@ class MailingsActiveListView(ListView):
         if self.get_queryset().count() > self.paginate_by:
             context['show_pagination'] = True
         return context
+
+
+class MailingDetailView(DetailView):
+    """ Информация о рассылке """
+    model = Mailing
+    template_name = 'mailing_detail.html'
+    context_object_name = 'mailing'
 
 
 class RecipientListView(ListView):

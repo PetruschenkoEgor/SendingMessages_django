@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Информация о рассылке{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center" style="margin-bottom:3%">Рассылка: {{ mailing.id }}</h1>
+<div class="container" style="margin-left: 10%;">
+<h1 class="display-6">Дата и время первой отправки: {{ mailing.date_time_first_shipment }}</h1>
+<h1 class="display-6">Дата и время окончания отправки: {{ mailing.date_time_end_shipment }}</h1>
+<h1 class="display-6">Статус: {{ mailing.status }}</h1>
+<h1 class="display-6">Тема сообщения: {{ mailing.message.topic }}</h1>
+<h1 class="display-6">Сообщение: {{ mailing.message.body }}</h1>
+<h1 class="display-6">Получатели: {{ mailing.recipients }}</h1>
+<h1 class="display-6">Отправитель: {{ mailing.sender }}</h1>
+    </div>
+{% endblock %}

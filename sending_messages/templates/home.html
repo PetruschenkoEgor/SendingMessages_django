@@ -58,7 +58,7 @@
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <a href="{% url 'sending_messages:mailings' %}" class="nav-link px-2 link-body-emphasis">
+            <a href="{% url 'sending_messages:mailings_list' %}" class="nav-link px-2 link-body-emphasis">
               <p class="h4">Количество всех рассылок: {{ mailings }}</p>
             </a>
           </div>
@@ -101,8 +101,8 @@
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <a href="{% url 'sending_messages:mailings_active' %}" class="nav-link px-2 link-body-emphasis">
-              <p class="h4">Количество активных рассылок: {{ mailings_activ }}</p>
+            <a href="{% url 'sending_messages:mailings_active_list' %}" class="nav-link px-2 link-body-emphasis">
+              <p class="h4">Количество активных рассылок: {{ mailings_active }}</p>
             </a>
           </div>
         </div>
