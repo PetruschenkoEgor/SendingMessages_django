@@ -8,7 +8,7 @@
     {% endif %}
       {% for p in page_obj.paginator.page_range %}
         {% if p == page_obj.number %}
-          <li class="page-item"><a class="page-link paginat" href="">{{ p }}</a></li>
+          <li class="page-item"><a class="page-link paginat podsvetka-paginat" href="">{{ p }}</a></li>
         {% else %}
           <li class="page-item"><a class="page-link podsvetka-paginat" href="?page={{ p }}">{{ p }}</a></li>
         {% endif %}

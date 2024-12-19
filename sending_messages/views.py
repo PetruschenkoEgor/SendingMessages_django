@@ -138,3 +138,31 @@ class MailingsListView(ListView):
     paginate_by = 10
     template_name = 'mailings_list.html'
     context_object_name = 'mailings'
+
+    def get_context_data(self, **kwargs):
+        """ Пагинация появится, только если активных рассылок будет больше, чем указано в paginate_by """
+        context = super().get_context_data(**kwargs)
+        mailings = Mailing.objects.all().count()
+        if mailings > self.paginate_by:
+            context['show_pagination'] = True
+        return context
+
+
+class MailingsActiveListView(ListView):
+    """ Список активных рассылок """
+    model = Mailing
+    paginate_by = 10
+    template_name = 'mailings_active_list.html'
+    context_object_name = 'mailings'
+
+    def get_queryset(self):
+        """ Только активные рассылки """
+
+        return Mailing.objects.filter(status='Запущена')
+
+    def get_context_data(self, **kwargs):
+        """ Пагинация появится, только если активных рассылок будет больше, чем указано в paginate_by """
+        context = super().get_context_data(**kwargs)
+        if self.get_queryset().count() > self.paginate_by:
+            context['show_pagination'] = True
+        return context
