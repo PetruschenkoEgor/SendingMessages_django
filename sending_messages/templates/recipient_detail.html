@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Информация о рассылке{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center" style="margin-bottom:3%">Информация о получателе:</h1>
+<div class="container" style="margin-left: 10%;">
+    {% if recipient.fio %}
+<h1 class="display-6">Ф.И.О.: {{ recipient.fio }}</h1>
+    {% endif %}
+<h1 class="display-6">Email получателя: {{ recipient.email }}</h1>
+    {% if recipient.comment %}
+<h1 class="display-6">Комментарий: {{ recipient.comment }}</h1>
+    {% endif %}
+    </div>
+{% endblock %}

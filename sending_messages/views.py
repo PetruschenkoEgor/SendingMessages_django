@@ -181,3 +181,10 @@ class RecipientListView(ListView):
     model = Recipient
     template_name = 'recipient_list.html'
     context_object_name = 'recipients'
+
+
+class RecipientDetailView(DetailView):
+    """ Информация о получателе """
+    model = Recipient
+    template_name = 'recipient_detail.html'
+    context_object_name = 'recipient'

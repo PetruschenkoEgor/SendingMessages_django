@@ -14,11 +14,13 @@
             <div class="row g-0">
                 <div class="col-md-8">
                     <div class="card-body">
+                        <a href="{% url 'sending_messages:recipient_detail' recipient.pk %}">
                         <p class="card-text d-flex justify-content-between">
                             <span>{{ recipient.email }}</span>
                             <span>-</span>
                             <span>{{ recipient.fio }}</span>
                         </p>
+                        </a>
                         {% if recipient.comment %}
                         <p class="card-text d-flex justify-content-between">
                             <span>Комментарий:</span>
