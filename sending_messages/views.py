@@ -1,7 +1,8 @@
 from django.core.mail import send_mail
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView
 
 from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm
@@ -231,4 +232,22 @@ class RecipientDetailView(DetailView):
     context_object_name = 'recipient'
 
 
-# class Ma
+class SendMailingView(View):
+    """ Отправка уже существующей рассылки """
+
+    def get(self, request, *args, **kwargs):
+        # получаем ид рассылки, а по ид получаем саму рассылку
+        mailing_id = self.kwargs.get('pk')
+        mailing = get_object_or_404(Mailing, pk=mailing_id)
+
+        # отправка сообщения
+        # recipients_list = [recipient.email for recipient in mailing.recipients.all()]
+        send_message_yandex(mailing.message.topic, mailing.message.body, mailing.sender, mailing.recipients.all())
+
+        return redirect('sending_messages:mailing_ok')
+
+
+class MailingOkTemplateView(TemplateView):
+    """ Рассылка успешно отправлена """
+
+    template_name = 'mailing_ok.html'

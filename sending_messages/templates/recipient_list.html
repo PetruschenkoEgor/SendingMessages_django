@@ -17,9 +17,11 @@
                         <a href="{% url 'sending_messages:recipient_detail' recipient.pk %}">
                         <p class="card-text d-flex justify-content-between">
                             <span>{{ recipient.email }}</span>
+                            {% if recipient.fio %}
                             <span>-</span>
                             <span>{{ recipient.fio }}</span>
                         </p>
+                            {% endif %}
                         </a>
                         {% if recipient.comment %}
                         <p class="card-text d-flex justify-content-between">
