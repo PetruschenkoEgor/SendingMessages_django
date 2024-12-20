@@ -3,8 +3,8 @@ from django.db import models
 
 class Recipient(models.Model):
     """ Получатель рассылки """
-    email = models.EmailField(verbose_name='Email получателя', help_text='Введите Email')
-    fio = models.CharField(max_length=300, verbose_name='Ф.И.О.', help_text='Введите фамилию, имя, отчество')
+    email = models.EmailField(verbose_name='Email получателя', help_text='Введите Email', unique=True)
+    fio = models.CharField(max_length=300, verbose_name='Ф.И.О.', help_text='Введите фамилию, имя, отчество', blank=True, null=True)
     comment = models.TextField(verbose_name='Комментарий', help_text='Введите комментарий', blank=True, null=True)
 
     class Meta:
@@ -13,7 +13,7 @@ class Recipient(models.Model):
         ordering = ['fio',]
 
     def __str__(self):
-        return f'{self.fio} - {self.email}'
+        return f'{self.email}'
 
 
 class Message(models.Model):
@@ -32,7 +32,7 @@ class Message(models.Model):
 class Sender(models.Model):
     """ Отправитель """
     name = models.CharField(max_length=250, verbose_name='Имя отправителя', help_text='Введите имя отправителя', blank=True, null=True)
-    email = models.EmailField(verbose_name='Email отправителя', help_text='Введите email отправителя')
+    email = models.EmailField(verbose_name='Email отправителя', help_text='Введите email отправителя', unique=True)
     organization = models.CharField(max_length=300, verbose_name='Организация', help_text='Введите название организации', blank=True, null=True)
 
     class Meta:
@@ -53,10 +53,10 @@ class Mailing(models.Model):
     ]
 
     date_time_first_shipment = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время первой отправки')
-    date_time_end_shipment = models.DateTimeField(auto_now=True, verbose_name='Дата и время первой отправки')
+    date_time_end_shipment = models.DateTimeField(auto_now=True, verbose_name='Дата и время окончания отправки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Создана', verbose_name='Статус')
     message = models.ForeignKey('Message', on_delete=models.SET_NULL, verbose_name='Сообщение', help_text='Введите сообщение', blank=True, null=True, related_name='mailings')
-    recipients = models.ManyToManyField(Recipient)
+    recipients = models.ManyToManyField(Recipient, verbose_name='Получатель', help_text='Укажите получателя', blank=True, null=True)
     sender = models.ForeignKey('Sender', on_delete=models.SET_NULL, verbose_name='Отправитель', help_text='Укажите отправителя', blank=True, null=True, related_name='mailings')
 
     class Meta:

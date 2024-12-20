@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView
@@ -29,6 +30,12 @@ class SenderCreateView(CreateView):
     form_class = SenderForm
     template_name = 'mailing1.html'
     success_url = reverse_lazy('sending_messages:add_message')
+
+    # def get_context_data(self, **kwargs):
+    #     """ Передача в шаблон всех отправителей """
+    #     context = super().get_context_data(**kwargs)
+    #     context['senders'] = Sender.objects.all()
+    #     return context
 
     def form_valid(self, form):
         """ Сохраняет объект в БД и записывает его ид в сессии """
