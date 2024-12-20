@@ -61,8 +61,16 @@
         {% csrf_token %}
         {{ form.as_p }}
     <div class="d-flex">
+        {% if object %}
+        <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-4">Назад</button></a>
+        {% else %}
         <button type="button" class="btn btn-primary fs-4">Шаг назад</button>
+        {% endif %}
+        {% if object %}
+        <button type="submit" class="btn btn-success ms-auto fs-4">Сохранить</button>
+        {% else %}
         <button type="submit" class="btn btn-success ms-auto fs-4">Отправить</button>
+        {% endif %}
     </div>
         </form>
 </div>

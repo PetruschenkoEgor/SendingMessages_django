@@ -6,6 +6,12 @@
     justify-content: center;
 }
 
+.element-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
 .paginat{
         background: #4285F4;
         color: white;

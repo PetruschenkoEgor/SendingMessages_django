@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView
+from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView, DeleteView
 
 from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm
 from sending_messages.models import Mailing, Sender, Message, Recipient, AttemptMailing
@@ -175,6 +175,28 @@ class SendingCreateView(CreateView):
     #     return context
 
 
+class MailingUpdateView(UpdateView):
+    """ Редактирование рассылки """
+
+    model = Mailing
+    form_class = MailingForm
+    template_name = 'mailing4.html'
+    success_url = reverse_lazy('sending_messages:mailings_list')
+
+
+class MailingDeleteView(DeleteView):
+    """ Удаление рассылки """
+
+    model = Mailing
+    template_name = 'mailing_confirm_delete.html'
+    success_url = reverse_lazy('sending_messages:mailings_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['recipients'] = self.object.recipients.all()
+        return context
+
+
 class MailingsListView(ListView):
     """ Список всех рассылок """
     model = Mailing
@@ -241,7 +263,6 @@ class SendMailingView(View):
         mailing = get_object_or_404(Mailing, pk=mailing_id)
 
         # отправка сообщения
-        # recipients_list = [recipient.email for recipient in mailing.recipients.all()]
         send_message_yandex(mailing.message.topic, mailing.message.body, mailing.sender, mailing.recipients.all())
 
         return redirect('sending_messages:mailing_ok')
