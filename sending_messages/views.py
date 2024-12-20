@@ -6,6 +6,7 @@ from django.views.generic import TemplateView, CreateView, DetailView, ListView,
 
 from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm
 from sending_messages.models import Mailing, Sender, Message, Recipient, AttemptMailing
+from sending_messages.services import send_message_yandex
 
 
 class MailingTemplateView(TemplateView):
@@ -143,16 +144,12 @@ class SendingCreateView(CreateView):
         # создаем объект рассылки
         mailing = Mailing.objects.create(sender=sender, message=message)
         mailing.recipients.add(*recipients)
+        mailing.save()
 
         try:
             recipients_list = [recipient.email for recipient in recipients]
             # отправка сообщения
-            send_mail(
-                message.topic,
-                message.body,
-                sender.email,
-                recipient_list=recipients_list,
-            )
+            send_message_yandex(message.topic, message.body, sender.email, recipients_list)
 
             status = 'Успешно'
             mail_server_response = 'Сообщение успешно отправлено'
@@ -232,3 +229,6 @@ class RecipientDetailView(DetailView):
     model = Recipient
     template_name = 'recipient_detail.html'
     context_object_name = 'recipient'
+
+
+# class Ma
