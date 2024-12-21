@@ -122,6 +122,14 @@ class RecipientUpdateView(UpdateView):
     success_url = reverse_lazy('sending_messages:add_sending')
 
 
+class RecipientDeleteView(DeleteView):
+    """ Удаление получателя """
+
+    model = Recipient
+    template_name = 'recipient_confirm_delete.html'
+    success_url = reverse_lazy('sending_messages:recipient_list')
+
+
 class SendingCreateView(CreateView):
     """ Создание рассылки - отправка(4) """
 

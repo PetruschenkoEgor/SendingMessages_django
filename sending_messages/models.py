@@ -6,6 +6,7 @@ class Recipient(models.Model):
     email = models.EmailField(verbose_name='Email получателя', help_text='Введите Email', unique=True)
     fio = models.CharField(max_length=300, verbose_name='Ф.И.О.', help_text='Введите фамилию, имя, отчество', blank=True, null=True)
     comment = models.TextField(verbose_name='Комментарий', help_text='Введите комментарий', blank=True, null=True)
+    active = models.BooleanField(verbose_name='Активность', help_text='Укажите активность', default=True)
 
     class Meta:
         verbose_name = 'Получатель рассылки'
@@ -79,6 +80,7 @@ class AttemptMailing(models.Model):
     status = models.CharField(max_length=11, choices=STATUS_CHOICES, default='Не успешно', verbose_name='Статус')
     mail_server_response = models.TextField(verbose_name='Ответ почтового сервера')
     mailing = models.ForeignKey('Mailing', on_delete=models.CASCADE, verbose_name='Рассылка', help_text='Введите рассылку', related_name='attemptmailings')
+    sending_count = models.PositiveIntegerField(verbose_name='Счетчик рассылок', default=0)
 
     class Meta:
         verbose_name = 'Попытка рассылки'

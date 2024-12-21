@@ -9,7 +9,11 @@
 <h1 class="display-6">Статус: {{ mailing.status }}</h1>
 <h1 class="display-6">Тема сообщения: {{ mailing.message.topic }}</h1>
 <h1 class="display-6">Сообщение: {{ mailing.message.body }}</h1>
-<h1 class="display-6">Получатели: {{ mailing.recipients }}</h1>
+<h1 class="display-6">Получатели:
+    {% for recipient in recipients %}
+        {{ recipient.email }}
+        {% endfor %}
+    </h1>
 <h1 class="display-6">Отправитель: {{ mailing.sender }}</h1>
     </div>
 {% endblock %}
