@@ -113,23 +113,6 @@ class RecipientCreateView(CreateView):
         return recipient
 
 
-# class RecipientListCreateView(CreateView):
-#     """ Добавить список получателей """
-#
-#     model = Recipient
-#     form_class = RecipientListForm
-#     template_name = 'create_recipient_list.html'
-#     success_url = reverse_lazy('sending_messages:recipient_list')
-#
-#     def form_valid(self, form):
-#         """ Сохраняет список получателей в базу данных """
-#
-#         emails = form.cleaned_data.get('emails')
-#         if emails:
-#             for email in emails:
-#                 Recipient.objects.create(email=email)
-#         return redirect(self.success_url)
-
 class RecipientListFormView(FormView):
     """ Добавить список получателей """
 
@@ -285,7 +268,7 @@ class MailingDetailView(DetailView):
 class RecipientListView(ListView):
     """ Список получателей """
     model = Recipient
-    template_name = 'recipient_list.html'
+    template_name = 'recipient_list1.html'
     context_object_name = 'recipients'
 
 

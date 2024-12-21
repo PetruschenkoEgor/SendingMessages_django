@@ -18,6 +18,12 @@
     justify-content: space-evenly;
     }
 
+.element-column-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    }
+
 .paginat{
         background: #4285F4;
         color: white;
