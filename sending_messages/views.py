@@ -3,9 +3,9 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView, DeleteView
+from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView, DeleteView, FormView
 
-from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm
+from sending_messages.forms import SenderForm, MessageForm, RecipientForm, MailingForm, RecipientListForm
 from sending_messages.models import Mailing, Sender, Message, Recipient, AttemptMailing
 from sending_messages.services import send_message_yandex
 
@@ -111,6 +111,40 @@ class RecipientCreateView(CreateView):
         # сохраняет ид созданного объекта в сессии для использования на следующем этапе
         self.request.session['recipient_ids'] = recipient_ids
         return recipient
+
+
+# class RecipientListCreateView(CreateView):
+#     """ Добавить список получателей """
+#
+#     model = Recipient
+#     form_class = RecipientListForm
+#     template_name = 'create_recipient_list.html'
+#     success_url = reverse_lazy('sending_messages:recipient_list')
+#
+#     def form_valid(self, form):
+#         """ Сохраняет список получателей в базу данных """
+#
+#         emails = form.cleaned_data.get('emails')
+#         if emails:
+#             for email in emails:
+#                 Recipient.objects.create(email=email)
+#         return redirect(self.success_url)
+
+class RecipientListFormView(FormView):
+    """ Добавить список получателей """
+
+    form_class = RecipientListForm
+    template_name = 'create_recipient_list.html'
+    success_url = reverse_lazy('sending_messages:recipient_list')
+
+    def form_valid(self, form):
+        """ Сохраняет список получателей в базу данных """
+
+        emails = form.cleaned_data.get('emails')
+        if emails:
+            for email in emails:
+                Recipient.objects.create(email=email)
+        return super().form_valid(form)
 
 
 class RecipientUpdateView(UpdateView):

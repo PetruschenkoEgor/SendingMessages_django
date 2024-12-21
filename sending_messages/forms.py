@@ -1,6 +1,11 @@
-from django.forms import BooleanField, ModelForm
-
+from django.core.validators import validate_email
+from django.forms import BooleanField, ModelForm, forms
+from django.core.exceptions import ValidationError
+import re
+from django import forms
 from sending_messages.models import Sender, Message, Recipient, Mailing
+from sending_messages.services import parser_input_email_list
+from django.utils.translation import gettext_lazy as _
 
 
 class StyleFormMixin:
@@ -43,6 +48,50 @@ class RecipientForm(StyleFormMixin, ModelForm):
     #     self.fields['email'].widget.attrs.update({'class': 'form-control'})
     #     self.fields['fio'].widget.attrs.update({'class': 'form-control'})
     #     self.fields['comment'].widget.attrs.update({'class': 'form-control'})
+
+
+# class RecipientListForm(forms.Form):
+#     """ Форма для списка получателей """
+#     emails = forms.CharField(widget=forms.Textarea, label='Вставьте список получателей в текстовое поле')
+#     # class Meta:
+#     #     model = Recipient
+#     #     fields = ('email',)
+#
+#     def clean_emails(self):
+#         """ Обработка введенных данных """
+#         emails = self.cleaned_data.get('emails')
+#         if emails:
+#             # проверка, что введен именно email
+#             email_list = parser_input_email_list(emails)
+#             # проверяем есть ли в БД данный email
+#             for email in email_list:
+#                 if Recipient.objects.filter(email=email).exists():
+#                     raise forms.ValidationError(f'Этот {email} уже существует')
+#             return email_list
+
+class RecipientListForm(StyleFormMixin, forms.Form):
+    """Форма для списка получателей"""
+
+    emails = forms.CharField(
+        widget=forms.Textarea,
+        label=_('example@mail.ru, example2@mail.ru, example3@mail.ru'),
+    )
+
+    def clean_emails(self):
+        """Обработка введённых данных"""
+        raw_emails = self.cleaned_data['emails']
+        emails = parser_input_email_list(raw_emails)
+        cleaned_emails = []
+
+        for email in emails:
+            email = email.strip()  # Убираем лишние пробелы вокруг email
+
+            if Recipient.objects.filter(email=email).exists():  # Проверяем, существует ли такой email в базе данных
+                raise ValidationError(_(f"Адрес {email} уже зарегистрирован."))
+
+            cleaned_emails.append(email)
+
+        return cleaned_emails
 
 
 class MailingForm(StyleFormMixin, ModelForm):
