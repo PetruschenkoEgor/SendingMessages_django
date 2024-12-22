@@ -11,6 +11,18 @@
         </ul>
     </div>
 </div>
+<div class="container">
+<div class="col-md-6">
+          <div class="card-body element-center">
+            <a href="{% url 'sending_messages:add_recipient' %}" class="d-flex align-items-center mb-lg-0 text-decoration-none">
+              <button type="button" class="btn btn-primary btn-lg"  style="width: 90%;">+ Добавить получателя</button>
+            </a>
+              <a href="{% url 'sending_messages:add_recipient_list' %}" class="d-flex align-items-center mb-lg-0 text-decoration-none">
+              <button type="button" class="btn btn-primary btn-lg"  style="width: 90%;">+ Добавить получателей</button>
+            </a>
+          </div>
+        </div>
+    </div>
 {% if not recipients %}
 <h1 class="display-6 text-center mt-5">Получателей нет</h1>>
 {% endif %}

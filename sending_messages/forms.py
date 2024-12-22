@@ -75,6 +75,7 @@ class RecipientListForm(StyleFormMixin, forms.Form):
     emails = forms.CharField(
         widget=forms.Textarea,
         label=_('example@mail.ru, example2@mail.ru, example3@mail.ru'),
+        required=False
     )
 
     def clean_emails(self):

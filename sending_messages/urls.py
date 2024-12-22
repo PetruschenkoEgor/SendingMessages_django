@@ -1,9 +1,10 @@
 from django.urls import path
 from sending_messages.apps import SendingMessagesConfig
-from sending_messages.views import MailingTemplateView, SenderCreateView, MessageCreateView, RecipientCreateView, \
+from sending_messages.views import MailingTemplateView, SenderCreateView, MessageCreateView, \
     SendingCreateView, MailingsListView, MailingsActiveListView, RecipientListView, MailingDetailView, \
     RecipientDetailView, SenderUpdateView, MessageUpdateView, RecipientUpdateView, MailingOkTemplateView, \
-    SendMailingView, MailingUpdateView, MailingDeleteView, RecipientDeleteView, RecipientListFormView
+    SendMailingView, MailingUpdateView, MailingDeleteView, RecipientDeleteView, RecipientListFormView, \
+    RecipientListMailingFormView, RecipientCreateView
 
 app_name = SendingMessagesConfig.name
 
@@ -12,6 +13,7 @@ urlpatterns = [
     path('mailing/add_sender/', SenderCreateView.as_view(), name='add_sender'),
     path('mailing/add_message/', MessageCreateView.as_view(), name='add_message'),
     path('mailing/add_recipient/', RecipientCreateView.as_view(), name='add_recipient'),
+    path('mailing/add_recipients/', RecipientListMailingFormView.as_view(), name='add_recipients'),
     path('mailing/add_recipient_list/', RecipientListFormView.as_view(), name='add_recipient_list'),
     path('mailing/add_sending/', SendingCreateView.as_view(), name='add_sending'),
     path('mailings/', MailingsListView.as_view(), name='mailings_list'),

@@ -53,6 +53,7 @@ class Mailing(models.Model):
         ('Запущена', 'запущена'),
     ]
 
+    name = models.CharField(max_length=150, verbose_name='Название рассылки', help_text='Введите название рассылки', blank=True, null=True)
     date_time_first_shipment = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время первой отправки')
     date_time_end_shipment = models.DateTimeField(auto_now=True, verbose_name='Дата и время окончания отправки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Создана', verbose_name='Статус')

@@ -33,19 +33,31 @@ class SenderCreateView(CreateView):
     template_name = 'mailing1.html'
     success_url = reverse_lazy('sending_messages:add_message')
 
-    # def get_context_data(self, **kwargs):
-    #     """ Передача в шаблон всех отправителей """
-    #     context = super().get_context_data(**kwargs)
-    #     context['senders'] = Sender.objects.all()
-    #     return context
-
     def form_valid(self, form):
         """ Сохраняет объект в БД и записывает его ид в сессии """
-        # сохраняет объект в БД и возвращает http ответ
-        sender = super().form_valid(form)
-        # сохраняет ид созданного объекта в сессии для использования на следующем этапе
-        self.request.session['sender_id'] = self.object.id
-        return sender
+        # # сохраняет объект в БД и возвращает http ответ
+        # sender = super().form_valid(form)
+        # # сохраняет ид созданного объекта в сессии для использования на следующем этапе
+        # self.request.session['sender_id'] = self.object.id
+        # return sender
+
+        email = form.cleaned_data.get('email')
+        sender = Sender.objects.filter(email=email).first()
+        if sender:
+            self.request.session['sender_id'] = sender.id
+        else:
+            sender = form.save()
+            self.request.session['sender_id'] = sender.id
+        return redirect(self.success_url)
+
+    def form_invalid(self, form):
+        """ Если email уже существует в БД, то используем его же, без сохранения в БД """
+        # если форма не валидирована, записывает ид отправителя в сессию
+        email = form.cleaned_data.get('email')
+        sender = Sender.objects.filter(email=email).first()
+        if sender:
+            self.request.session['sender_id'] = sender.id
+        return redirect(self.success_url)
 
 
 class SenderUpdateView(UpdateView):
@@ -67,7 +79,7 @@ class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
     template_name = 'mailing2.html'
-    success_url = reverse_lazy('sending_messages:add_recipient')
+    success_url = reverse_lazy('sending_messages:add_recipients')
 
     def form_valid(self, form):
         """ Сохраняет объект в БД и записывает его ид в сессии """
@@ -130,6 +142,29 @@ class RecipientListFormView(FormView):
         return super().form_valid(form)
 
 
+class RecipientListMailingFormView(FormView):
+    """ Создание рассылки - получатели(3) """
+
+    form_class = RecipientListForm
+    template_name = 'mailing3_create_recipient_list.html'
+    success_url = reverse_lazy('sending_messages:add_sending')
+
+    def form_valid(self, form):
+        """ Сохраняет список получателей в базу данных """
+
+        emails = form.cleaned_data.get('emails')
+        if emails:
+            # создаем список с идентификаторами получателей и добавляем в него иды
+            # recipient_ids = self.request.session.get('recipient_ids', [])
+            for email in emails:
+                Recipient.objects.create(email=email)
+
+                # recipient_ids.append(self.object.id)
+            # сохраняет ид созданного объекта в сессии для использования на следующем этапе
+            # self.request.session['recipient_ids'] = recipient_ids
+        return super().form_valid(form)
+
+
 class RecipientUpdateView(UpdateView):
     """ Редактирование получателя """
 
@@ -154,26 +189,41 @@ class SendingCreateView(CreateView):
     form_class = MailingForm
     template_name = 'mailing4.html'
 
+    def get_initial(self):
+        """ Автоматическое заполнение формы имеющимися данными """
+        initial = super().get_initial()
+        sender_id = self.request.session.get('sender_id')
+        message_id = self.request.session.get('message_id')
+
+        if sender_id:
+            initial['sender'] = Sender.objects.get(id=sender_id)
+        if message_id:
+            initial['message'] = Message.objects.get(id=message_id)
+        initial['recipients'] = Recipient.objects.filter(active=True)
+        return initial
+
     def form_valid(self, form):
         # получаем сохраненные идентификаторы
         sender_id = self.request.session.get('sender_id')
         message_id = self.request.session.get('message_id')
         # получаем список ид получателей
-        recipient_ids = self.request.session.get('recipient_ids', [])
-        print(f'количество1: {len(recipient_ids)}')
+        # recipient_ids = self.request.session.get('recipient_ids', [])
+        # print(f'количество1: {len(recipient_ids)}')
 
         # по ид получаем объекты из БД
         sender = Sender.objects.get(id=sender_id)
         message = Message.objects.get(id=message_id)
-        recipients = Recipient.objects.filter(id__in=recipient_ids)
+        # recipients = Recipient.objects.filter(id__in=recipient_ids)
+        recipients_existing = Recipient.objects.filter(active=True)
+        print(f'Количество получателей: {recipients_existing.count()}')
 
         # создаем объект рассылки
         mailing = Mailing.objects.create(sender=sender, message=message)
-        mailing.recipients.add(*recipients)
+        mailing.recipients.add(*recipients_existing)
         mailing.save()
 
         try:
-            recipients_list = [recipient.email for recipient in recipients]
+            recipients_list = [recipient.email for recipient in recipients_existing]
             # отправка сообщения
             send_message_yandex(message.topic, message.body, sender.email, recipients_list)
 
@@ -187,6 +237,9 @@ class SendingCreateView(CreateView):
 
         # создаем объект попытки рассылки
         AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
+        # attempt = AttemptMailing.objects.get(mailing=mailing)
+        # attempt.sending_count += 1
+        # attempt.save()
 
         return redirect('sending_messages:home')
 
@@ -196,7 +249,6 @@ class SendingCreateView(CreateView):
     #     mailing = self.get_object()
     #     context['sender'] = mailing.sender
     #     context['message'] = mailing.message
-    #     context['recipients'] = mailing.recipients.all()
     #     return context
 
 
@@ -263,6 +315,11 @@ class MailingDetailView(DetailView):
     model = Mailing
     template_name = 'mailing_detail.html'
     context_object_name = 'mailing'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['recipients'] = self.object.recipients.all()
+        return context
 
 
 class RecipientListView(ListView):
