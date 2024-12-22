@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.forms import forms
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -22,7 +23,104 @@ class MailingTemplateView(TemplateView):
         context['mailings'] = Mailing.objects.count()
         context['mailings_active'] = Mailing.objects.filter(status='Запущена').count()
         context['recipients'] = Recipient.objects.all().count()
+        context['messages'] = Message.objects.all().count()
         return context
+
+
+class RecipientCreateView(CreateView):
+    """ Создание получателя """
+
+    model = Recipient
+    form_class = RecipientForm
+    template_name = 'mailing3.html'
+    success_url = reverse_lazy('sending_messages:recipient_list')
+
+    def form_valid(self, form):
+        """ Сохраняет объект в БД и записывает его ид в сессии """
+        recipient = super().form_valid(form)
+
+        return recipient
+
+
+class RecipientListFormView(FormView):
+    """ Добавить список получателей """
+
+    form_class = RecipientListForm
+    template_name = 'create_recipient_list.html'
+    success_url = reverse_lazy('sending_messages:recipient_list')
+
+    def form_valid(self, form):
+        """ Сохраняет список получателей в базу данных """
+
+        emails = form.cleaned_data.get('emails')
+        if emails:
+            for email in emails:
+                if not Recipient.objects.filter(email=email).exists():
+                    Recipient.objects.create(email=email)
+        return super().form_valid(form)
+
+
+class MessageListView(ListView):
+    """ Список шаблонов писем """
+
+    model = Message
+    template_name = 'message_list.html'
+    context_object_name = 'messages'
+
+
+class MessageDetailView(DetailView):
+    """ Информация о письме """
+
+    model = Message
+    template_name = 'message_detail.html'
+    context_object_name = 'message'
+
+
+class MessageCreateView(CreateView):
+    """ Создание сообщения """
+
+    model = Message
+    form_class = MessageForm
+    template_name = 'mailing2.html'
+    success_url = reverse_lazy('sending_messages:message_list')
+
+    def form_valid(self, form):
+        """ Сохраняет объект в БД и записывает его ид в сессии """
+        # сохраняет объект в БД и возвращает http ответ
+        message = super().form_valid(form)
+        # сохраняет ид созданного объекта в сессии для использования на следующем этапе
+        self.request.session['message_id'] = self.object.id
+        return message
+
+
+class MessageUpdateView(UpdateView):
+    """ Редактирование письма """
+
+    model = Message
+    form_class = MessageForm
+    template_name = 'mailing2.html'
+    success_url = reverse_lazy('sending_messages:message_list')
+
+
+class MessageDeleteView(DeleteView):
+    """ Удаление письма """
+
+    model = Message
+    template_name = 'message_confirm_delete.html'
+    success_url = reverse_lazy('sending_messages:message_list')
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class SenderCreateView(CreateView):
@@ -73,73 +171,30 @@ class SenderUpdateView(UpdateView):
         return next_url
 
 
-class MessageCreateView(CreateView):
-    """ Создание рассылки - письмо(2) """
-
-    model = Message
-    form_class = MessageForm
-    template_name = 'mailing2.html'
-    success_url = reverse_lazy('sending_messages:add_recipients')
-
-    def form_valid(self, form):
-        """ Сохраняет объект в БД и записывает его ид в сессии """
-        # сохраняет объект в БД и возвращает http ответ
-        message = super().form_valid(form)
-        # сохраняет ид созданного объекта в сессии для использования на следующем этапе
-        self.request.session['message_id'] = self.object.id
-        return message
-
-
-class MessageUpdateView(UpdateView):
-    """ Редактирование письма """
-
-    model = Message
-    form_class = MessageForm
-    template_name = 'mailing2.html'
-
-    def get_success_url(self):
-        """ Перенаправление пользователя на ту страницу, с которой он пришел """
-        next_url = self.request.GET.get('next')
-        if next_url:
-            return next_url
-        return reverse_lazy('sending_messages:add_sending')
+# class RecipientCreateView(CreateView):
+#     """ Создание рассылки - получатели(3) """
+#
+#     model = Recipient
+#     form_class = RecipientForm
+#     template_name = 'mailing3.html'
+#     success_url = reverse_lazy('sending_messages:add_sending')
+#
+#     def form_valid(self, form):
+#         """ Сохраняет объект в БД и записывает его ид в сессии """
+#         # сохраняет объект в БД и возвращает http ответ
+#         recipient = super().form_valid(form)
+#         # создаем список с идентификаторами получателей и добавляем в него иды
+#         recipient_ids = self.request.session.get('recipient_ids', [])
+#         recipient_ids.append(self.object.id)
+#         # сохраняет ид созданного объекта в сессии для использования на следующем этапе
+#         self.request.session['recipient_ids'] = recipient_ids
+#         return recipient
 
 
-class RecipientCreateView(CreateView):
-    """ Создание рассылки - получатели(3) """
-
-    model = Recipient
-    form_class = RecipientForm
-    template_name = 'mailing3.html'
-    success_url = reverse_lazy('sending_messages:add_sending')
-
-    def form_valid(self, form):
-        """ Сохраняет объект в БД и записывает его ид в сессии """
-        # сохраняет объект в БД и возвращает http ответ
-        recipient = super().form_valid(form)
-        # создаем список с идентификаторами получателей и добавляем в него иды
-        recipient_ids = self.request.session.get('recipient_ids', [])
-        recipient_ids.append(self.object.id)
-        # сохраняет ид созданного объекта в сессии для использования на следующем этапе
-        self.request.session['recipient_ids'] = recipient_ids
-        return recipient
 
 
-class RecipientListFormView(FormView):
-    """ Добавить список получателей """
 
-    form_class = RecipientListForm
-    template_name = 'create_recipient_list.html'
-    success_url = reverse_lazy('sending_messages:recipient_list')
 
-    def form_valid(self, form):
-        """ Сохраняет список получателей в базу данных """
-
-        emails = form.cleaned_data.get('emails')
-        if emails:
-            for email in emails:
-                Recipient.objects.create(email=email)
-        return super().form_valid(form)
 
 
 class RecipientListMailingFormView(FormView):

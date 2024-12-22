@@ -4,7 +4,7 @@ from sending_messages.views import MailingTemplateView, SenderCreateView, Messag
     SendingCreateView, MailingsListView, MailingsActiveListView, RecipientListView, MailingDetailView, \
     RecipientDetailView, SenderUpdateView, MessageUpdateView, RecipientUpdateView, MailingOkTemplateView, \
     SendMailingView, MailingUpdateView, MailingDeleteView, RecipientDeleteView, RecipientListFormView, \
-    RecipientListMailingFormView, RecipientCreateView
+    RecipientListMailingFormView, RecipientCreateView, MessageListView, MessageDeleteView, MessageDetailView
 
 app_name = SendingMessagesConfig.name
 
@@ -27,6 +27,9 @@ urlpatterns = [
     path('mailing/<int:pk>/edit/', MailingUpdateView.as_view(), name='edit_mailing'),
     path('mailings/<int:pk>/send/', SendMailingView.as_view(), name='send'),
     path('mailing_ok/', MailingOkTemplateView.as_view(), name='mailing_ok'),
-    path('mailing/<int:pk>/delete', MailingDeleteView.as_view(), name='mailing_delete'),
+    path('mailing/<int:pk>/delete/', MailingDeleteView.as_view(), name='mailing_delete'),
     path('recipient/<int:pk>/delete/', RecipientDeleteView.as_view(), name='recipient_delete'),
+    path('messages/', MessageListView.as_view(), name='message_list'),
+    path('message/<int:pk>/delete/', MessageDeleteView.as_view(), name='message_delete'),
+    path('message/<int:pk>/', MessageDetailView.as_view(), name='message_detail'),
 ]
