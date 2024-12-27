@@ -24,7 +24,7 @@
             <div class="row g-0">
                 <div class="col-md-10">
                     <div class="card-body">
-                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · отправлено {{ mailing.attemptMailing.sending_count }} раз </small></p>
+                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · отправлено {{ mailing.sending_count }} раз </small></p>
                         <a href="{% url 'sending_messages:mailing_detail' mailing.pk %}">
                         <h5 class="card-title">Рассылка: {{ mailing.id }}</h5>
                             </a>

@@ -30,21 +30,6 @@ class Message(models.Model):
         return self.topic
 
 
-class Sender(models.Model):
-    """ Отправитель """
-    name = models.CharField(max_length=250, verbose_name='Имя отправителя', help_text='Введите имя отправителя', blank=True, null=True)
-    email = models.EmailField(verbose_name='Email отправителя', help_text='Введите email отправителя', unique=True)
-    organization = models.CharField(max_length=300, verbose_name='Организация', help_text='Введите название организации', blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Отправитель'
-        verbose_name_plural = 'Отправители'
-        ordering = ['name',]
-
-    def __str__(self):
-        return self.email
-
-
 class Mailing(models.Model):
     """ Рассылка """
     STATUS_CHOICES = [
@@ -59,7 +44,6 @@ class Mailing(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Создана', verbose_name='Статус')
     message = models.ForeignKey('Message', on_delete=models.SET_NULL, verbose_name='Сообщение', help_text='Введите сообщение', blank=True, null=True, related_name='mailings')
     recipients = models.ManyToManyField(Recipient, verbose_name='Получатель', help_text='Укажите получателя', blank=True, null=True)
-    sender = models.ForeignKey('Sender', on_delete=models.SET_NULL, verbose_name='Отправитель', help_text='Укажите отправителя', blank=True, null=True, related_name='mailings')
 
     class Meta:
         verbose_name = 'Рассылка'

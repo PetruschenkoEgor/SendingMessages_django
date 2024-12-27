@@ -3,7 +3,7 @@ from django.forms import BooleanField, ModelForm, forms
 from django.core.exceptions import ValidationError
 import re
 from django import forms
-from sending_messages.models import Sender, Message, Recipient, Mailing
+from sending_messages.models import Message, Recipient, Mailing
 from sending_messages.services import parser_input_email_list
 from django.utils.translation import gettext_lazy as _
 
@@ -18,14 +18,6 @@ class StyleFormMixin:
                 fild.widget.attrs['class'] = 'form-check-input'
             else:
                 fild.widget.attrs['class'] = 'form-control form-control-lg'
-
-
-class SenderForm(StyleFormMixin, ModelForm):
-    """ Форма для отправителя """
-
-    class Meta:
-        model = Sender
-        fields = '__all__'
 
 
 class MessageForm(StyleFormMixin, ModelForm):
