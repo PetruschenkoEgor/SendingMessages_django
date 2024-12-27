@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Удаление получателя{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+<div class="container mb-5">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                <h1 class="display-4" style="margin-left: 8%;">Вы действительно хотите удалить этого получателя?</h1>
+            </li>
+        </ul>
+    </div>
+</div>
+    {% csrf_token %}
+<div class="container">
+    <div class="col d-flex justify-content">
+        {% if recipient.fio %}
+<h1 class="display-6 text-primary">Ф.И.О.: </h1><h1 class="display-6">{{ recipient.fio }}</h1>
+        {% endif %}
+    </div>
+    <div class="col d-flex justify-content">
+<h1 class="display-6 text-primary">Email получателя: </h1><h1 class="display-6">{{ recipient.email }}</h1>
+    </div>
+    <div class="col d-flex justify-content">
+        {% if recipient.comment %}
+<h1 class="display-6 text-primary">Комментарий: </h1><h1 class="display-6">{{ recipient.comment }}</h1>
+        {% endif %}
+    </div>
+    <div class="col-md-12 element-center">
+    <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-2 mt-5">Отменить</button></a>
+                    <button type="submit" class="btn btn-danger ms-auto fs-2 mt-5">Удалить</button>
+    </div>
+    </div>
+</form>
+{% endblock %}

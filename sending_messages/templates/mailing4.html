@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Создать рассылку{% endblock %}
+
+{% block content %}
+{% if object %}
+<div class="container text-center">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                <h1 class="display-4" style="margin-left: 8%;">Редактировать рассылку</h1>
+            </li>
+        </ul>
+    </div>
+</div>
+{% else %}
+<div class="container text-center">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                <h1 class="display-4" style="margin-left: 8%;">Создать рассылку</h1>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<div class="container mt-5">
+    <form method="post" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <div class="d-flex">
+        <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-4">Назад</button></a>
+        {% if object %}
+        <button type="submit" class="btn btn-success ms-auto fs-4">Сохранить</button>
+        {% else %}
+        <button type="submit" class="btn btn-success ms-auto fs-4">Отправить</button>
+        {% endif %}
+    </div>
+        </form>
+</div>
+
+{% endblock %}

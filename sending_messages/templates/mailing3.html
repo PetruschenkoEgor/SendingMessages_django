@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Получатели{% endblock %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                {% if object %}
+                <h1 class="display-4" style="margin-left: 8%;">Редактировать получателя</h1>
+                {% else %}
+                <h1 class="display-4" style="margin-left: 8%;">Добавить получателя</h1>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="container">
+    <form method="post" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label text-primary fs-4">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="text">
+                {{ field.errors.as_text }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    <div class="d-flex">
+        <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-4">Назад</button></a>
+        <button type="submit" class="btn btn-success ms-auto fs-4">Сохранить</button>
+    </div>
+        </form>
+</div>
+
+{% endblock %}

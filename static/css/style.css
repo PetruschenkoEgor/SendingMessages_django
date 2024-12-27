@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+.element-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    }
+
+.element-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    }
+
+.element-evenly {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    }
+
+.element-column-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    }
+
+.paginat{
+        background: #4285F4;
+        color: white;
+        }
+
+.podsvetka-paginat:hover {
+        background: #4285F4; /* тут цвет*/
+        color: white;
+        transition: 0.5s;
+        }
