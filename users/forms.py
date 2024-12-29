@@ -9,6 +9,10 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
     class Meta:
         model = User
         fields = ('email', 'password1', 'password2')
+        labels = {
+            'password1': 'Пароль',
+            'password2': 'Повторите пароль',
+        }
 
 
 class CustomAuthenticationForm(StyleFormMixin, AuthenticationForm):
@@ -17,3 +21,6 @@ class CustomAuthenticationForm(StyleFormMixin, AuthenticationForm):
     class Meta:
         model = User
         field = ('email', 'password')
+        labels = {
+            'password': 'Пароль',
+        }
