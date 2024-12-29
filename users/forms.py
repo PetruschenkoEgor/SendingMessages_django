@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
 from sending_messages.forms import StyleFormMixin
 from users.models import User
 
@@ -24,3 +24,13 @@ class CustomAuthenticationForm(StyleFormMixin, AuthenticationForm):
         labels = {
             'password': 'Пароль',
         }
+
+
+class CustomPasswordResetForm(StyleFormMixin, PasswordResetForm):
+    """ Форма для запроса сброса пароля """
+    pass
+
+
+class CustomSetPasswordForm(StyleFormMixin, SetPasswordForm):
+    """ Форма для установки нового пароля """
+    pass
