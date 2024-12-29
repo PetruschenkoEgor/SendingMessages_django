@@ -1,4 +1,5 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
+    UserChangeForm
 from sending_messages.forms import StyleFormMixin
 from users.models import User
 

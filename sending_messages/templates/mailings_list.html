@@ -26,7 +26,11 @@
                     <div class="card-body">
                         <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · отправлено {{ mailing.sending_count }} раз </small></p>
                         <a href="{% url 'sending_messages:mailing_detail' mailing.pk %}">
-                        <h5 class="card-title">Рассылка: {{ mailing.id }}</h5>
+                            {% if mailing.name %}
+                        <h5 class="card-title">Рассылка: {{ mailing.name }}</h5>
+                            {% else %}
+                            <h5 class="card-title">Рассылка: {{ mailing.id }}</h5>
+                            {% endif %}
                             </a>
                         <p class="card-text">Дата и время первой отправки: {{ mailing.date_time_first_shipment }}</p>
                         <p class="card-text">Статус рассылки: {{ mailing.status }}</p>

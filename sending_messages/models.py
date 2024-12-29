@@ -65,7 +65,9 @@ class AttemptMailing(models.Model):
     status = models.CharField(max_length=11, choices=STATUS_CHOICES, default='Не успешно', verbose_name='Статус')
     mail_server_response = models.TextField(verbose_name='Ответ почтового сервера')
     mailing = models.ForeignKey('Mailing', on_delete=models.CASCADE, verbose_name='Рассылка', help_text='Введите рассылку', related_name='attemptmailings')
-    sending_count = models.PositiveIntegerField(verbose_name='Счетчик рассылок', default=0)
+    sending_count_ok = models.PositiveIntegerField(verbose_name='Счетчик успешных рассылок', default=0)
+    sending_count_error = models.PositiveIntegerField(verbose_name='Счетчик неуспешных рассылок', default=0)
+    count_messages = models.PositiveIntegerField(verbose_name='Счетчик отправленных сообщений', default=0)
 
     class Meta:
         verbose_name = 'Попытка рассылки'

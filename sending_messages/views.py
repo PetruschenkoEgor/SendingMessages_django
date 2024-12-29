@@ -25,6 +25,10 @@ class MailingTemplateView(TemplateView):
         context['mailings_active'] = Mailing.objects.filter(status='Запущена').count()
         context['recipients'] = Recipient.objects.all().count()
         context['messages'] = Message.objects.all().count()
+        attempts = AttemptMailing.objects.all()
+        context['attempt_ok'] = sum([attempt.sending_count_ok for attempt in attempts])
+        context['attempt_error'] = sum([attempt.sending_count_error for attempt in attempts])
+        context['messages_count'] = sum([attempt.count_messages for attempt in attempts])
         return context
 
 
@@ -197,7 +201,7 @@ class SendingCreateView(CreateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'mailing4.html'
-    success_url = reverse_lazy('sending_messages:mailing_ok')
+    success_url = reverse_lazy('sending_messages:mailings_list')
 
     def get_initial(self):
         """ Автоматическое заполнение формы всеми активными получателями """
@@ -227,17 +231,21 @@ class SendingCreateView(CreateView):
 
             status = 'Успешно'
             mail_server_response = 'Сообщение успешно отправлено'
-            print(f'Получатели: {recipients_list}')
+            # создаем объект попытки рассылки
+            AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
+            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt.sending_count_ok += 1
+            attempt.count_messages += len(recipients_list)
+            attempt.save()
 
         except Exception as e:
             status = 'Не успешно'
             mail_server_response = f'{e}'
-
-        # создаем объект попытки рассылки
-        AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
-        attempt = AttemptMailing.objects.get(mailing=mailing)
-        attempt.sending_count += 1
-        attempt.save()
+            # создаем объект попытки рассылки
+            AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
+            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt.sending_count_error += 1
+            attempt.save()
 
         return response
 
@@ -251,20 +259,38 @@ class SendMailingView(View):
         mailing_id = self.kwargs.get('pk')
         mailing = get_object_or_404(Mailing, pk=mailing_id)
 
-        # отправка сообщения
-        send_message_yandex(mailing.message.topic, mailing.message.body, EMAIL_HOST_USER, mailing.recipients.all())
-        # увеличение количества раз отправления данной рассылки
-        attempt = AttemptMailing.objects.get(mailing=mailing)
-        attempt.sending_count += 1
-        attempt.save()
+        try:
+            # отправка сообщения
+            recipients = mailing.recipients.all()
+            send_message_yandex(mailing.message.topic, mailing.message.body, EMAIL_HOST_USER, recipients)
+            # увеличение количества раз отправления данной рассылки
+            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt.sending_count_ok += 1
+            attempt.count_messages += recipients.count()
+            attempt.save()
 
-        return redirect('sending_messages:mailing_ok')
+        except Exception as e:
+            status = 'Не успешно'
+            mail_server_response = f'{e}'
+            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt.status = status
+            attempt.mail_server_response = mail_server_response
+            attempt.sending_count_error += 1
+            attempt.save()
+
+        return redirect('sending_messages:mailings_list')
 
 
-class MailingOkTemplateView(TemplateView):
-    """ Рассылка успешно отправлена """
-
-    template_name = 'mailing_ok.html'
+# class MailingOkTemplateView(TemplateView):
+#     """ Рассылка успешно отправлена """
+#
+#     template_name = 'mailing_ok.html'
+#
+#     def get_context_data(self, **kwargs):
+#         """ Передача в шаблон успешная или неуспешная отправка """
+#
+#         context = super().get_context_data()
+#         context
 
 
 class MailingUpdateView(UpdateView):
