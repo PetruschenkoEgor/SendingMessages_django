@@ -13,7 +13,13 @@ from sending_messages.models import Mailing, Message, Recipient, AttemptMailing
 from sending_messages.services import send_message_yandex
 
 
-class MailingTemplateView(TemplateView):
+class InfoTemplateView(TemplateView):
+    """ Информация о сайте """
+
+    template_name = 'info.html'
+
+
+class MailingTemplateView(LoginRequiredMixin, TemplateView):
     """ Главная страница """
 
     template_name = 'home.html'
@@ -46,14 +52,14 @@ class RecipientListView(LoginRequiredMixin, ListView):
         return Recipient.objects.filter(owner=self.request.user)
 
 
-class RecipientDetailView(DetailView):
+class RecipientDetailView(LoginRequiredMixin, DetailView):
     """ Информация о получателе """
     model = Recipient
     template_name = 'recipient_detail.html'
     context_object_name = 'recipient'
 
 
-class RecipientCreateView(CreateView):
+class RecipientCreateView(LoginRequiredMixin, CreateView):
     """ Создание получателя, устанавливаем владельца получателя """
 
     model = Recipient
@@ -79,7 +85,7 @@ class RecipientCreateView(CreateView):
         return super().form_valid(form)
 
 
-class RecipientListFormView(FormView):
+class RecipientListFormView(LoginRequiredMixin, FormView):
     """ Добавить список получателей, установка владельца получателей """
 
     form_class = RecipientListForm
@@ -97,7 +103,7 @@ class RecipientListFormView(FormView):
         return super().form_valid(form)
 
 
-class RecipientUpdateView(UpdateView):
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     """ Редактирование получателя """
 
     model = Recipient
@@ -106,7 +112,7 @@ class RecipientUpdateView(UpdateView):
     success_url = reverse_lazy('sending_messages:recipient_list')
 
 
-class RecipientDeleteView(DeleteView):
+class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     """ Удаление получателя """
 
     model = Recipient
@@ -114,7 +120,7 @@ class RecipientDeleteView(DeleteView):
     success_url = reverse_lazy('sending_messages:recipient_list')
 
 
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, ListView):
     """ Список шаблонов писем """
 
     model = Message
@@ -127,7 +133,7 @@ class MessageListView(ListView):
         return Message.objects.filter(owner=self.request.user)
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     """ Информация о письме """
 
     model = Message
@@ -135,7 +141,7 @@ class MessageDetailView(DetailView):
     context_object_name = 'message'
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     """ Создание сообщения """
 
     model = Message
@@ -151,7 +157,7 @@ class MessageCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     """ Редактирование письма """
 
     model = Message
@@ -160,7 +166,7 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy('sending_messages:message_list')
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     """ Удаление письма """
 
     model = Message
@@ -168,7 +174,7 @@ class MessageDeleteView(DeleteView):
     success_url = reverse_lazy('sending_messages:message_list')
 
 
-class MailingsListView(ListView):
+class MailingsListView(LoginRequiredMixin, ListView):
     """ Список всех рассылок """
     model = Mailing
     paginate_by = 10
@@ -189,7 +195,7 @@ class MailingsListView(ListView):
         return context
 
 
-class MailingsActiveListView(ListView):
+class MailingsActiveListView(LoginRequiredMixin, ListView):
     """ Список активных рассылок """
     model = Mailing
     paginate_by = 10
@@ -210,7 +216,7 @@ class MailingsActiveListView(ListView):
         return context
 
 
-class MailingDetailView(DetailView):
+class MailingDetailView(LoginRequiredMixin, DetailView):
     """ Информация о рассылке """
     model = Mailing
     template_name = 'mailing_detail.html'
@@ -224,7 +230,7 @@ class MailingDetailView(DetailView):
         return context
 
 
-class SendingCreateView(CreateView):
+class SendingCreateView(LoginRequiredMixin, CreateView):
     """ Создание рассылки """
 
     model = Mailing
@@ -292,7 +298,7 @@ class SendingCreateView(CreateView):
         return response
 
 
-class SendMailingView(View):
+class SendMailingView(LoginRequiredMixin, View):
     """ Отправка уже существующей рассылки """
 
     def get(self, request, *args, **kwargs):
@@ -337,7 +343,7 @@ class SendMailingView(View):
 #         context
 
 
-class MailingUpdateView(UpdateView):
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
     """ Редактирование рассылки """
 
     model = Mailing
@@ -346,7 +352,7 @@ class MailingUpdateView(UpdateView):
     success_url = reverse_lazy('sending_messages:mailings_list')
 
 
-class MailingDeleteView(DeleteView):
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
     """ Удаление рассылки """
 
     model = Mailing
