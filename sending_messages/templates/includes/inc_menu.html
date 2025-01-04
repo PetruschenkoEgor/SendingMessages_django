@@ -1,5 +1,4 @@
 <header class="p-3 mb-3 border-bottom">
-    <div class="container">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="{% url 'sending_messages:home' %}" class="d-flex align-items-center mb-2 mb-lg-0 link-body-primary text-decoration-none">
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
@@ -9,9 +8,11 @@
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="{% url 'sending_messages:message_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Письма</h1></a></li>
+            <li><a href="{% url 'sending_messages:recipient_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Получатели</h1></a></li>
           <li><a href="{% url 'sending_messages:mailings_list' %}" class="nav-link px-2 link-body-emphasis podsvetkamenu"><h1 class="display-6">Рассылки</h1></a></li>
-          <li><a href="{% url 'sending_messages:recipient_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Получатели</h1></a></li>
           <li><a href="#" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Автоматизация</h1></a></li>
+            <li><a href="{% url 'sending_messages:info' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Информация</h1></a></li>
         </ul>
 
 
@@ -81,6 +82,5 @@
           </ul>
         </div>
       </div>
-    </div>
   </header>
 <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
