@@ -25,7 +25,7 @@ class MessageForm(StyleFormMixin, ModelForm):
 
     class Meta:
         model = Message
-        fields = '__all__'
+        fields = ('topic', 'body')
 
 
 class RecipientForm(StyleFormMixin, ModelForm):
@@ -33,7 +33,7 @@ class RecipientForm(StyleFormMixin, ModelForm):
 
     class Meta:
         model = Recipient
-        fields = '__all__'
+        fields = ('email', 'fio', 'comment', 'active',)
 
     def clean_emails(self):
         """ Проверяет, существует ли email в базе данных """
@@ -103,4 +103,13 @@ class MailingForm(StyleFormMixin, ModelForm):
 
     class Meta:
         model = Mailing
-        exclude = ('status',)
+        exclude = ('status', 'owner')
+
+    def __init__(self, *args, **kwargs):
+        """ При создании рассылки, пользователь может выбрать только свои сообщения и получателей """
+
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['message'].queryset = Message.objects.filter(owner=user)
+            self.fields['recipients'].queryset = Recipient.objects.filter(owner=user)

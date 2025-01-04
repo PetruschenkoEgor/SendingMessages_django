@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.forms import forms
 from django.http import JsonResponse
@@ -21,22 +22,28 @@ class MailingTemplateView(TemplateView):
         """ Передача объекта Mailing в шаблон """
 
         context = super().get_context_data()
-        context['mailings'] = Mailing.objects.count()
-        context['mailings_active'] = Mailing.objects.filter(status='Запущена').count()
-        context['recipients'] = Recipient.objects.all().count()
-        context['messages'] = Message.objects.all().count()
-        attempts = AttemptMailing.objects.all()
+        context['mailings'] = Mailing.objects.filter(owner=self.request.user).count()
+        context['mailings_active'] = Mailing.objects.filter(status='Запущена', owner=self.request.user).count()
+        context['recipients'] = Recipient.objects.filter(owner=self.request.user).count()
+        context['messages'] = Message.objects.filter(owner=self.request.user).count()
+        attempts = AttemptMailing.objects.filter(owner=self.request.user)
         context['attempt_ok'] = sum([attempt.sending_count_ok for attempt in attempts])
         context['attempt_error'] = sum([attempt.sending_count_error for attempt in attempts])
         context['messages_count'] = sum([attempt.count_messages for attempt in attempts])
         return context
 
 
-class RecipientListView(ListView):
+class RecipientListView(LoginRequiredMixin, ListView):
     """ Список получателей """
+
     model = Recipient
     template_name = 'recipient_list1.html'
     context_object_name = 'recipients'
+
+    def get_queryset(self):
+        """ Получатели рассылки только текущего пользователя """
+
+        return Recipient.objects.filter(owner=self.request.user)
 
 
 class RecipientDetailView(DetailView):
@@ -47,7 +54,7 @@ class RecipientDetailView(DetailView):
 
 
 class RecipientCreateView(CreateView):
-    """ Создание получателя """
+    """ Создание получателя, устанавливаем владельца получателя """
 
     model = Recipient
     form_class = RecipientForm
@@ -56,13 +63,24 @@ class RecipientCreateView(CreateView):
 
     def form_valid(self, form):
         """ Сохраняет объект в БД """
-        recipient = super().form_valid(form)
 
-        return recipient
+        email = form.cleaned_data['email']
+        recipient, created = Recipient.objects.get_or_create(email=email, owner=self.request.user)
+        if created:
+            recipient.fio = form.cleaned_data.get('fio', recipient.fio)
+            recipient.comment = form.cleaned_data.get('comment', recipient.comment)
+            recipient.active = form.cleaned_data.get('active', recipient.active)
+            recipient.save()
+        else:
+            # Если получатель уже существует, добавляем сообщение об ошибке
+            form.add_error('email', 'Получатель с таким email уже существует.')
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
 
 
 class RecipientListFormView(FormView):
-    """ Добавить список получателей """
+    """ Добавить список получателей, установка владельца получателей """
 
     form_class = RecipientListForm
     template_name = 'create_recipient_list.html'
@@ -74,8 +92,8 @@ class RecipientListFormView(FormView):
         emails = form.cleaned_data.get('emails')
         if emails:
             for email in emails:
-                if not Recipient.objects.filter(email=email).exists():
-                    Recipient.objects.create(email=email)
+                if not Recipient.objects.filter(email=email, owner=self.request.user).exists():
+                    Recipient.objects.create(email=email, owner=self.request.user)
         return super().form_valid(form)
 
 
@@ -103,6 +121,11 @@ class MessageListView(ListView):
     template_name = 'message_list.html'
     context_object_name = 'messages'
 
+    def get_queryset(self):
+        """ Сообщения текущего пользователя """
+
+        return Message.objects.filter(owner=self.request.user)
+
 
 class MessageDetailView(DetailView):
     """ Информация о письме """
@@ -122,9 +145,10 @@ class MessageCreateView(CreateView):
 
     def form_valid(self, form):
         """ Сохраняет объект в БД """
-        # сохраняет объект в БД и возвращает http ответ
-        message = super().form_valid(form)
-        return message
+
+        form.instance.owner = self.request.user
+
+        return super().form_valid(form)
 
 
 class MessageUpdateView(UpdateView):
@@ -151,10 +175,15 @@ class MailingsListView(ListView):
     template_name = 'mailings_list.html'
     context_object_name = 'mailings'
 
+    def get_queryset(self):
+        """ Рассылки только текущего пользователя """
+
+        return Mailing.objects.filter(owner=self.request.user)
+
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если рассылок будет больше, чем указано в paginate_by """
         context = super().get_context_data(**kwargs)
-        mailings = Mailing.objects.all().count()
+        mailings = Mailing.objects.filter(owner=self.request.user).count()
         if mailings > self.paginate_by:
             context['show_pagination'] = True
         return context
@@ -168,9 +197,9 @@ class MailingsActiveListView(ListView):
     context_object_name = 'mailings'
 
     def get_queryset(self):
-        """ Только активные рассылки """
+        """ Только активные рассылки и текущего пользователя """
 
-        return Mailing.objects.filter(status='Запущена')
+        return Mailing.objects.filter(status='Запущена', owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если активных рассылок будет больше, чем указано в paginate_by """
@@ -203,21 +232,30 @@ class SendingCreateView(CreateView):
     template_name = 'mailing4.html'
     success_url = reverse_lazy('sending_messages:mailings_list')
 
+    def get_form_kwargs(self):
+        """ При создании рассылки, пользователь может выбрать только свои сообщения и получателей """
+
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get_initial(self):
         """ Автоматическое заполнение формы всеми активными получателями """
+
         initial = super().get_initial()
 
-        initial['recipients'] = Recipient.objects.filter(active=True)
+        initial['recipients'] = Recipient.objects.filter(active=True, owner=self.request.user)
         return initial
 
     def form_valid(self, form):
-        """ Сохранение рассылки и ее попытки, отправка сообщения """
+        """ Сохранение рассылки и ее попытки, отправка сообщения, устанавливаем владельца рассылки """
 
+        form.instance.owner = self.request.user
         response = super().form_valid(form)
         mailing = self.object
 
         # все активные получатели
-        recipients_existing = Recipient.objects.filter(active=True)
+        recipients_existing = Recipient.objects.filter(active=True, owner=self.request.user)
         print(f'Количество получателей: {recipients_existing.count()}')
 
         # добавляем получателей
@@ -232,19 +270,23 @@ class SendingCreateView(CreateView):
             status = 'Успешно'
             mail_server_response = 'Сообщение успешно отправлено'
             # создаем объект попытки рассылки
-            AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
-            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt, created = AttemptMailing.objects.get_or_create(mailing=mailing)
+            attempt.status = status
+            attempt.mail_server_response = mail_server_response
             attempt.sending_count_ok += 1
             attempt.count_messages += len(recipients_list)
-            attempt.save()
 
         except Exception as e:
             status = 'Не успешно'
             mail_server_response = f'{e}'
             # создаем объект попытки рассылки
-            AttemptMailing.objects.create(status=status, mail_server_response=mail_server_response, mailing=mailing)
-            attempt = AttemptMailing.objects.get(mailing=mailing)
+            attempt, created = AttemptMailing.objects.get_or_create(mailing=mailing)
+            attempt.status = status
+            attempt.mail_server_response = mail_server_response
             attempt.sending_count_error += 1
+
+        finally:
+            attempt.owner = self.request.user
             attempt.save()
 
         return response
@@ -267,7 +309,6 @@ class SendMailingView(View):
             attempt = AttemptMailing.objects.get(mailing=mailing)
             attempt.sending_count_ok += 1
             attempt.count_messages += recipients.count()
-            attempt.save()
 
         except Exception as e:
             status = 'Не успешно'
@@ -276,6 +317,9 @@ class SendMailingView(View):
             attempt.status = status
             attempt.mail_server_response = mail_server_response
             attempt.sending_count_error += 1
+
+        finally:
+            attempt.owner = self.request.user
             attempt.save()
 
         return redirect('sending_messages:mailings_list')

@@ -11,8 +11,16 @@
         </ul>
     </div>
 </div>
+<div class="container">
+<div class="col-md-6">
+          <div class="card-body">
+            <a href="{% url 'sending_messages:add_sending' %}" class="d-flex align-items-center mb-lg-0 text-decoration-none">
+              <button type="button" class="btn btn-primary btn-lg"  style="width: 90%;">+ Создать новую рассылку</button>
+            </a>
+          </div>
+</div>
 {% if not mailings %}
-<h1 class="display-6 text-center mt-5">Рассылок нет</h1>>
+<h1 class="display-6 text-center mt-5">Рассылок нет</h1>
 {% endif %}
 
 <div class="container">
