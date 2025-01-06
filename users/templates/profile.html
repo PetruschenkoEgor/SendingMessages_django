@@ -14,7 +14,7 @@
 <div class="container">
     <div class="col d-flex justify-content">
         {% if user.avatar %}
-<img src="" class="card-img-top" alt="...">
+<img src="{{ user.avatar.url }}" class="card-img-top" alt="Аватар пользователя" style="width: 40%">
         {% endif %}
     </div>
     <div class="col d-flex justify-content">
@@ -24,13 +24,15 @@
         {% if user.phone_number %}
 <h1 class="display-6 text-primary">Телефон: </h1><h1 class="display-6">{{ user.phone_number }}</h1>
         {% endif %}
+    </div>
+        <div class="col d-flex justify-content">
         {% if user.country %}
 <h1 class="display-6 text-primary">Страна: </h1><h1 class="display-6">{{ user.country }}</h1>
         {% endif %}
     </div>
     <div class="col-md-12 d-flex justify-content-between">
     <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-2 mt-5">Назад</button></a>
-                    <a href=""><button type="button" class="btn btn-danger ms-auto fs-2 mt-5">Редактировать</button></a>
+                    <a href="{% url 'users:edit_user' user.pk %}"><button type="button" class="btn btn-danger ms-auto fs-2 mt-5">Редактировать</button></a>
     </div>
     </div>
 {% endblock %}

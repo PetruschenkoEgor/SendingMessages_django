@@ -7,7 +7,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DetailView
 
 from config.settings import EMAIL_HOST_USER
-from users.forms import UserRegisterForm
+from users.forms import UserRegisterForm, UserUpdateForm
 from users.models import User
 
 
@@ -59,7 +59,15 @@ class UserDetailView(DetailView):
     context_object_name = 'user'
 
 
-# class UserUpdateView(UpdateView):
-#     """ Редактирование пользователя """
-#
-#     model = User
+class UserUpdateView(UpdateView):
+    """ Редактирование пользователя """
+
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'user_form.html'
+    # success_url = reverse_lazy('home')
+
+    def get_success_url(self):
+        """ Перенаправление пользователя после редактирования данных на личный кабинет """
+
+        return reverse_lazy('users:profile', kwargs={'pk': self.object.pk})

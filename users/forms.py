@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
     UserChangeForm
 from sending_messages.forms import StyleFormMixin
@@ -21,10 +22,18 @@ class CustomAuthenticationForm(StyleFormMixin, AuthenticationForm):
 
     class Meta:
         model = User
-        field = ('email', 'password')
+        fields = ('email', 'password')
         labels = {
             'password': 'Пароль',
         }
+
+
+class UserUpdateForm(StyleFormMixin, forms.ModelForm):
+    """ Форма редактирования пользователя """
+
+    class Meta:
+        model = User
+        fields = ('avatar', 'phone_number', 'country')
 
 
 class CustomPasswordResetForm(StyleFormMixin, PasswordResetForm):

@@ -5,7 +5,7 @@ from django.urls import path
 
 from users.apps import UsersConfig
 from users.forms import CustomAuthenticationForm, CustomPasswordResetForm, CustomSetPasswordForm
-from users.views import UserCreateView, email_verification, UserDetailView
+from users.views import UserCreateView, email_verification, UserDetailView, UserUpdateView
 
 app_name = UsersConfig.name
 urlpatterns = [
@@ -24,4 +24,5 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
 
     path('profile/<int:pk>/', UserDetailView.as_view(), name='profile'),
+    path('profile/<int:pk>/edit/', UserUpdateView.as_view(), name='edit_user'),
 ]
