@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, DetailView
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
@@ -49,3 +49,17 @@ def email_verification(request, token):
     user.save()
     login(request, user)
     return redirect(reverse('sending_messages:home'))
+
+
+class UserDetailView(DetailView):
+    """ Просмотр пользователя """
+
+    model = User
+    template_name = 'profile.html'
+    context_object_name = 'user'
+
+
+# class UserUpdateView(UpdateView):
+#     """ Редактирование пользователя """
+#
+#     model = User

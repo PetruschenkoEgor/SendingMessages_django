@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                <h1 class="display-4" style="margin-left: 8%;">Личный кабинет</h1>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <div class="col d-flex justify-content">
+        {% if user.avatar %}
+<img src="" class="card-img-top" alt="...">
+        {% endif %}
+    </div>
+    <div class="col d-flex justify-content">
+<h1 class="display-6 text-primary">Email: </h1><h1 class="display-6">{{ user.email }}</h1>
+    </div>
+    <div class="col d-flex justify-content">
+        {% if user.phone_number %}
+<h1 class="display-6 text-primary">Телефон: </h1><h1 class="display-6">{{ user.phone_number }}</h1>
+        {% endif %}
+        {% if user.country %}
+<h1 class="display-6 text-primary">Страна: </h1><h1 class="display-6">{{ user.country }}</h1>
+        {% endif %}
+    </div>
+    <div class="col-md-12 d-flex justify-content-between">
+    <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-2 mt-5">Назад</button></a>
+                    <a href=""><button type="button" class="btn btn-danger ms-auto fs-2 mt-5">Редактировать</button></a>
+    </div>
+    </div>
+{% endblock %}
