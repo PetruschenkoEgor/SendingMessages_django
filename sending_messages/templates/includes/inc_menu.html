@@ -11,7 +11,7 @@
             <li><a href="{% url 'sending_messages:message_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Письма</h1></a></li>
             <li><a href="{% url 'sending_messages:recipient_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Получатели</h1></a></li>
           <li><a href="{% url 'sending_messages:mailings_list' %}" class="nav-link px-2 link-body-emphasis podsvetkamenu"><h1 class="display-6">Рассылки</h1></a></li>
-          <li><a href="#" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Автоматизация</h1></a></li>
+          <li><a href="{% url 'sending_messages:attempt_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Статистика</h1></a></li>
             <li><a href="{% url 'sending_messages:info' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Информация</h1></a></li>
         </ul>
 

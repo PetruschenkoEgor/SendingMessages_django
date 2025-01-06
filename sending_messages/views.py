@@ -365,10 +365,12 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
 
+class AttemptMailingListView(LoginRequiredMixin, ListView):
+    """ Список попыток рассылки """
 
-
-
-
+    model = AttemptMailing
+    template_name = 'statistic.html'
+    context_object_name = 'attempts'
 
 
 
