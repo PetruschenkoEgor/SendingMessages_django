@@ -12,6 +12,10 @@
     </div>
 </div>
 <div class="container">
+
+    {% load custom_filter %}
+
+    {% if not user|has_group:'Менеджеры' %}
 <div class="col-md-6">
           <div class="card-body">
             <a href="{% url 'sending_messages:add_sending' %}" class="d-flex align-items-center mb-lg-0 text-decoration-none">
@@ -19,6 +23,7 @@
             </a>
           </div>
 </div>
+    {% endif %}
 {% if not mailings %}
 <h1 class="display-6 text-center mt-5">Рассылок нет</h1>
 {% endif %}
@@ -32,7 +37,7 @@
             <div class="row g-0">
                 <div class="col-md-10">
                     <div class="card-body">
-                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · отправлено {{ mailing.sending_count }} раз </small></p>
+                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · {% if not user|has_group:'Менеджеры' %}отправлено {{ mailing.sending_count }} раз{% else %}пользователь-владелец: {{ mailing.owner.email }} {% endif %}</small></p>
                         <a href="{% url 'sending_messages:mailing_detail' mailing.pk %}">
                             {% if mailing.name %}
                         <h5 class="card-title">Рассылка: {{ mailing.name }}</h5>
@@ -46,6 +51,7 @@
                         <p class="card-text">Сообщение: {{ mailing.message.body|truncatechars:150 }}</p>
                     </div>
                 </div>
+                {% if not user|has_group:'Менеджеры' %}
                 <div class="col-md-2 element-center">
                     <div class="element-evenly">
                   <a href="{% url 'sending_messages:send' mailing.pk %}"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
@@ -60,6 +66,7 @@
 </svg></a>
                         </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </li>

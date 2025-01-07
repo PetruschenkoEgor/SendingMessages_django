@@ -2,6 +2,9 @@
 {% block title %}Информация о письме{% endblock %}
 
 {% block content %}
+
+{% load custom_filter %}
+
 <div class="container mb-5">
     <div class="row">
         <ul class="list-group">
@@ -21,6 +24,8 @@
 
     <div class="col-md-12 d-flex justify-content-between">
     <a href="{{ request.META.HTTP_REFERER }}"><button type="button" class="btn btn-primary fs-2 mt-5">Отменить</button></a>
+        {% if not user|has_group:'Менеджеры' %}
                     <a href="{% url 'sending_messages:message_delete' message.pk %}"><button type="button" class="btn btn-danger ms-auto fs-2 mt-5">Удалить</button></a>
+    {% endif %}
     </div>
 {% endblock %}

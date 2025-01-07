@@ -47,9 +47,11 @@ class RecipientListView(LoginRequiredMixin, ListView):
     context_object_name = 'recipients'
 
     def get_queryset(self):
-        """ Получатели рассылки только текущего пользователя """
-
-        return Recipient.objects.filter(owner=self.request.user)
+        """ Получатели рассылки только текущего пользователя или все получатели в зависимости от прав пользователя """
+        if self.request.user.has_perm('sending_messages.can_view_all_recipients'):
+            return Recipient.objects.all()
+        else:
+            return Recipient.objects.filter(owner=self.request.user)
 
 
 class RecipientDetailView(LoginRequiredMixin, DetailView):
@@ -128,9 +130,12 @@ class MessageListView(LoginRequiredMixin, ListView):
     context_object_name = 'messages'
 
     def get_queryset(self):
-        """ Сообщения текущего пользователя """
+        """ Сообщения текущего пользователя или сообщения всех пользователей в зависимости от прав пользователя """
 
-        return Message.objects.filter(owner=self.request.user)
+        if self.request.user.has_perm('sending_messages.can_view_all_messages'):
+            return Message.objects.all()
+        else:
+            return Message.objects.filter(owner=self.request.user)
 
 
 class MessageDetailView(LoginRequiredMixin, DetailView):
@@ -176,15 +181,19 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 class MailingsListView(LoginRequiredMixin, ListView):
     """ Список всех рассылок """
+
     model = Mailing
     paginate_by = 10
     template_name = 'mailings_list.html'
     context_object_name = 'mailings'
 
     def get_queryset(self):
-        """ Рассылки только текущего пользователя """
+        """ Рассылки только текущего пользователя или всех пользователей в зависимости от прав пользователя """
 
-        return Mailing.objects.filter(owner=self.request.user)
+        if self.request.user.has_perm('sending_messages.can_view_all_mailings'):
+            return Mailing.objects.all()
+        else:
+            return Mailing.objects.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если рассылок будет больше, чем указано в paginate_by """
@@ -197,15 +206,19 @@ class MailingsListView(LoginRequiredMixin, ListView):
 
 class MailingsActiveListView(LoginRequiredMixin, ListView):
     """ Список активных рассылок """
+
     model = Mailing
     paginate_by = 10
     template_name = 'mailings_active_list.html'
     context_object_name = 'mailings'
 
     def get_queryset(self):
-        """ Только активные рассылки и текущего пользователя """
+        """ Только активные рассылки и текущего пользователя или всех пользователей в зависимости от прав пользователя """
 
-        return Mailing.objects.filter(status='Запущена', owner=self.request.user)
+        if self.request.user.has_perm('sending_messages.can_view_all_mailings'):
+            return Mailing.objects.filter(status='Запущена')
+        else:
+            return Mailing.objects.filter(status='Запущена', owner=self.request.user)
 
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если активных рассылок будет больше, чем указано в paginate_by """

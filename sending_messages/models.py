@@ -15,6 +15,9 @@ class Recipient(models.Model):
         verbose_name = 'Получатель рассылки'
         verbose_name_plural = 'Получатели рассылки'
         ordering = ['fio',]
+        permissions = [
+            ('can_view_all_recipients', 'Can view recipients'),
+        ]
 
     def __str__(self):
         return f'{self.email}'
@@ -30,6 +33,9 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
+        permissions = [
+            ('can_view_all_messages', 'Can view all messages'),
+        ]
 
     def __str__(self):
         return self.topic
@@ -55,6 +61,10 @@ class Mailing(models.Model):
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
         ordering = ['date_time_first_shipment', 'status',]
+        permissions = [
+            ('can_view_all_mailings', 'Can view all mailings'),
+            ('can_disabling_mailing', 'Can disabling mailing')
+        ]
 
     def __str__(self):
         return f'{self.date_time_first_shipment} - {self.status}'
