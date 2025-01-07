@@ -14,7 +14,7 @@ class Command(BaseCommand):
         subject = message_last.topic
         message = message_last.body
         from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [recipient.email for recipient in Recipient.objects.all()]
+        recipient_list = [recipient.email for recipient in Recipient.objects.filter(active=True)]
 
         send_mail(subject, message, from_email, recipient_list)
         self.stdout.write(self.style.SUCCESS('Отправлено успешно'))
