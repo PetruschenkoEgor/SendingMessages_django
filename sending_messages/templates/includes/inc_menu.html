@@ -1,3 +1,5 @@
+{% load custom_filter %}
+
 <header class="p-3 mb-3 border-bottom">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <a href="{% url 'sending_messages:home' %}" class="d-flex align-items-center mb-2 mb-lg-0 link-body-primary text-decoration-none">
@@ -10,8 +12,12 @@
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><a href="{% url 'sending_messages:message_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Письма</h1></a></li>
             <li><a href="{% url 'sending_messages:recipient_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Получатели</h1></a></li>
-          <li><a href="{% url 'sending_messages:mailings_list' %}" class="nav-link px-2 link-body-emphasis podsvetkamenu"><h1 class="display-6">Рассылки</h1></a></li>
+          <li><a href="{% url 'sending_messages:mailings_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Рассылки</h1></a></li>
+            {% if not user|has_group:"Менеджеры" %}
           <li><a href="{% url 'sending_messages:attempt_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Статистика</h1></a></li>
+            {% else %}
+            <li><a href="{% url 'users:users_list' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Пользователи</h1></a></li>
+            {% endif %}
             <li><a href="{% url 'sending_messages:info' %}" class="nav-link px-2 link-body-emphasis"><h1 class="display-6">Информация</h1></a></li>
         </ul>
 

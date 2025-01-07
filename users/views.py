@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, DetailView
+from django.views.generic import CreateView, UpdateView, DetailView, ListView
 
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm, UserUpdateForm
@@ -71,3 +71,11 @@ class UserUpdateView(UpdateView):
         """ Перенаправление пользователя после редактирования данных на личный кабинет """
 
         return reverse_lazy('users:profile', kwargs={'pk': self.object.pk})
+
+
+class UserListView(ListView):
+    """ Список пользователей """
+
+    model = User
+    template_name = 'user_list.html'
+    context_object_name = 'users'
