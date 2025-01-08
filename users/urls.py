@@ -5,7 +5,8 @@ from django.urls import path
 
 from users.apps import UsersConfig
 from users.forms import CustomAuthenticationForm, CustomPasswordResetForm, CustomSetPasswordForm
-from users.views import UserCreateView, email_verification, UserDetailView, UserUpdateView, UserListView
+from users.views import UserCreateView, email_verification, UserDetailView, UserUpdateView, UserListView, BlockUserView, \
+    UnblockUserView
 
 app_name = UsersConfig.name
 urlpatterns = [
@@ -26,4 +27,6 @@ urlpatterns = [
     path('profile/<int:pk>/', UserDetailView.as_view(), name='profile'),
     path('profile/<int:pk>/edit/', UserUpdateView.as_view(), name='edit_user'),
     path('users/', UserListView.as_view(), name='users_list'),
+    path('block/<int:pk>/', BlockUserView.as_view(), name='user_block'),
+    path('unblock/<int:pk>/', UnblockUserView.as_view(), name='user_unblock'),
 ]

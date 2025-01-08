@@ -1,9 +1,11 @@
 import secrets
 
+from django.contrib import messages
 from django.contrib.auth import login
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 
 from config.settings import EMAIL_HOST_USER
@@ -79,3 +81,25 @@ class UserListView(ListView):
     model = User
     template_name = 'user_list.html'
     context_object_name = 'users'
+
+
+class BlockUserView(View):
+    """ Блокировка пользователя """
+
+    def get(self, *args, **kwargs):
+        user_id = kwargs.get('pk')
+        user = get_object_or_404(User, id=user_id)
+        user.is_active = False
+        user.save()
+        return redirect('users:users_list')
+
+
+class UnblockUserView(View):
+    """ Разблокировка пользователя """
+
+    def get(self, *args, **kwargs):
+        user_id = kwargs.get('pk')
+        user = get_object_or_404(User, id=user_id)
+        user.is_active = True
+        user.save()
+        return redirect('users:users_list')
