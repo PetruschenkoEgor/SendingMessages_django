@@ -11,6 +11,7 @@ from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm, UserUpdateForm
 from users.models import User
+from users.services import get_users_from_cache
 
 
 class UserCreateView(CreateView):
@@ -81,6 +82,10 @@ class UserListView(ListView):
     model = User
     template_name = 'user_list.html'
     context_object_name = 'users'
+
+    def get_queryset(self):
+
+        return get_users_from_cache()
 
 
 class BlockUserView(View):

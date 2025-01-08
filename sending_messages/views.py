@@ -12,7 +12,10 @@ from config.settings import EMAIL_HOST_USER
 from sending_messages.forms import MessageForm, RecipientForm, MailingForm, RecipientListForm
 from sending_messages.mixins import MailingFormMixin
 from sending_messages.models import Mailing, Message, Recipient, AttemptMailing
-from sending_messages.services import send_message_yandex
+from sending_messages.services import send_message_yandex, get_recipients_from_cache, \
+    get_recipients_for_owner_from_cache, get_messages_from_cache, get_messages_for_owner_from_cache, \
+    get_mailings_from_cache, get_mailings_for_owner_from_cache, get_mailings_active_from_cache, \
+    get_mailings_active_for_owner_from_cache, get_attempt_mailings_for_owner_from_cache
 
 
 class InfoTemplateView(TemplateView):
@@ -52,9 +55,9 @@ class RecipientListView(LoginRequiredMixin, ListView):
         """ Получатели рассылки только текущего пользователя или все получатели в зависимости от прав пользователя """
 
         if self.request.user.has_perm('sending_messages.can_view_all_recipients'):
-            return Recipient.objects.all()
+            return get_recipients_from_cache()
         else:
-            return Recipient.objects.filter(owner=self.request.user)
+            return get_recipients_for_owner_from_cache(self.request.user.id)
 
 
 class RecipientDetailView(LoginRequiredMixin, DetailView):
@@ -158,9 +161,9 @@ class MessageListView(LoginRequiredMixin, ListView):
         """ Сообщения текущего пользователя или сообщения всех пользователей в зависимости от прав пользователя """
 
         if self.request.user.has_perm('sending_messages.can_view_all_messages'):
-            return Message.objects.all()
+            return get_messages_from_cache()
         else:
-            return Message.objects.filter(owner=self.request.user)
+            return get_messages_for_owner_from_cache(self.request.user.id)
 
 
 class MessageDetailView(LoginRequiredMixin, DetailView):
@@ -237,9 +240,9 @@ class MailingsListView(LoginRequiredMixin, ListView):
         """ Рассылки только текущего пользователя или всех пользователей в зависимости от прав пользователя """
 
         if self.request.user.has_perm('sending_messages.can_view_all_mailings'):
-            return Mailing.objects.all()
+            return get_mailings_from_cache()
         else:
-            return Mailing.objects.filter(owner=self.request.user)
+            return get_mailings_for_owner_from_cache(self.request.user.id)
 
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если рассылок будет больше, чем указано в paginate_by """
@@ -262,9 +265,9 @@ class MailingsActiveListView(LoginRequiredMixin, ListView):
         """ Только активные рассылки и текущего пользователя или всех пользователей в зависимости от прав пользователя """
 
         if self.request.user.has_perm('sending_messages.can_view_all_mailings'):
-            return Mailing.objects.filter(status='Запущена')
+            return get_mailings_active_from_cache()
         else:
-            return Mailing.objects.filter(status='Запущена', owner=self.request.user)
+            return get_mailings_active_for_owner_from_cache(self.request.user.id)
 
     def get_context_data(self, **kwargs):
         """ Пагинация появится, только если активных рассылок будет больше, чем указано в paginate_by """
@@ -444,6 +447,11 @@ class AttemptMailingListView(LoginRequiredMixin, ListView):
     model = AttemptMailing
     template_name = 'statistic.html'
     context_object_name = 'attempts'
+
+    def get_queryset(self):
+        """ Попытка рассылки только текущего пользователя """
+
+        return get_attempt_mailings_for_owner_from_cache(self.request.user.id)
 
 
 
