@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.forms import forms
 from django.http import JsonResponse
@@ -9,6 +10,7 @@ from django.views.generic import TemplateView, CreateView, DetailView, ListView,
 
 from config.settings import EMAIL_HOST_USER
 from sending_messages.forms import MessageForm, RecipientForm, MailingForm, RecipientListForm
+from sending_messages.mixins import MailingFormMixin
 from sending_messages.models import Mailing, Message, Recipient, AttemptMailing
 from sending_messages.services import send_message_yandex
 
@@ -48,6 +50,7 @@ class RecipientListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """ Получатели рассылки только текущего пользователя или все получатели в зависимости от прав пользователя """
+
         if self.request.user.has_perm('sending_messages.can_view_all_recipients'):
             return Recipient.objects.all()
         else:
@@ -56,6 +59,7 @@ class RecipientListView(LoginRequiredMixin, ListView):
 
 class RecipientDetailView(LoginRequiredMixin, DetailView):
     """ Информация о получателе """
+
     model = Recipient
     template_name = 'recipient_detail.html'
     context_object_name = 'recipient'
@@ -113,6 +117,16 @@ class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'mailing3.html'
     success_url = reverse_lazy('sending_messages:recipient_list')
 
+    def get_form_class(self):
+        """ Редактировать могут владельцы """
+
+        user = self.request.user
+        # если пользователь владелец
+        if user == self.object.owner:
+            return RecipientForm
+
+        raise PermissionDenied
+
 
 class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     """ Удаление получателя """
@@ -120,6 +134,17 @@ class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     model = Recipient
     template_name = 'recipient_confirm_delete.html'
     success_url = reverse_lazy('sending_messages:recipient_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Удалять могут владельцы """
+
+        user = self.request.user
+        recipient = self.get_object()
+        # если пользователь владелец
+        if user == recipient.owner:
+            return super().dispatch(request, *args, **kwargs)
+
+        raise PermissionDenied
 
 
 class MessageListView(LoginRequiredMixin, ListView):
@@ -170,6 +195,16 @@ class MessageUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'mailing2.html'
     success_url = reverse_lazy('sending_messages:message_list')
 
+    def get_form_class(self):
+        """ Редактировать могут владельцы """
+
+        user = self.request.user
+        # если пользователь владелец
+        if user == self.object.owner:
+            return MessageForm
+
+        raise PermissionDenied
+
 
 class MessageDeleteView(LoginRequiredMixin, DeleteView):
     """ Удаление письма """
@@ -177,6 +212,17 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     template_name = 'message_confirm_delete.html'
     success_url = reverse_lazy('sending_messages:message_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Удалять могут владельцы """
+
+        user = self.request.user
+        message = self.get_object()
+        # если пользователь владелец
+        if user == message.owner:
+            return super().dispatch(request, *args, **kwargs)
+
+        raise PermissionDenied
 
 
 class MailingsListView(LoginRequiredMixin, ListView):
@@ -243,20 +289,13 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SendingCreateView(LoginRequiredMixin, CreateView):
+class SendingCreateView(MailingFormMixin, CreateView):
     """ Создание рассылки """
 
     model = Mailing
     form_class = MailingForm
     template_name = 'mailing4.html'
     success_url = reverse_lazy('sending_messages:mailings_list')
-
-    def get_form_kwargs(self):
-        """ При создании рассылки, пользователь может выбрать только свои сообщения и получателей """
-
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
 
     def get_initial(self):
         """ Автоматическое заполнение формы всеми активными получателями """
@@ -356,13 +395,23 @@ class SendMailingView(LoginRequiredMixin, View):
 #         context
 
 
-class MailingUpdateView(LoginRequiredMixin, UpdateView):
+class MailingUpdateView(MailingFormMixin, UpdateView):
     """ Редактирование рассылки """
 
     model = Mailing
     form_class = MailingForm
     template_name = 'mailing4.html'
     success_url = reverse_lazy('sending_messages:mailings_list')
+
+    def get_form_class(self):
+        """ Редактировать могут собственники """
+
+        user = self.request.user
+        # если пользователь владелец
+        if user == self.object.owner:
+            return MailingForm
+
+        raise PermissionDenied
 
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):
@@ -376,6 +425,17 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['recipients'] = self.object.recipients.all()
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Удалять могут собственники """
+
+        user = self.request.user
+        mailing = self.get_object()
+        # если пользователь владелец
+        if user == mailing.owner:
+            return super().dispatch(request, *args, **kwargs)
+
+        raise PermissionDenied
 
 
 class AttemptMailingListView(LoginRequiredMixin, ListView):
