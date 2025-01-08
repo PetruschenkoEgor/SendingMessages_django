@@ -2,6 +2,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import views as auth_views
 
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from users.apps import UsersConfig
 from users.forms import CustomAuthenticationForm, CustomPasswordResetForm, CustomSetPasswordForm
@@ -24,7 +25,7 @@ urlpatterns = [
     ), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
 
-    path('profile/<int:pk>/', UserDetailView.as_view(), name='profile'),
+    path('profile/<int:pk>/', cache_page(60)(UserDetailView.as_view()), name='profile'),
     path('profile/<int:pk>/edit/', UserUpdateView.as_view(), name='edit_user'),
     path('users/', UserListView.as_view(), name='users_list'),
     path('block/<int:pk>/', BlockUserView.as_view(), name='user_block'),
