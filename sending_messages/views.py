@@ -5,6 +5,7 @@ from django.forms import forms
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.cache import patch_cache_control
 from django.views import View
 from django.views.generic import TemplateView, CreateView, DetailView, ListView, UpdateView, DeleteView, FormView
 
@@ -43,6 +44,13 @@ class MailingTemplateView(LoginRequiredMixin, TemplateView):
         context['messages_count'] = sum([attempt.count_messages for attempt in attempts])
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
+
 
 class RecipientListView(LoginRequiredMixin, ListView):
     """ Список получателей """
@@ -59,6 +67,13 @@ class RecipientListView(LoginRequiredMixin, ListView):
         else:
             return get_recipients_for_owner_from_cache(self.request.user.id)
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)  # Кэширует ответ на пол часа
+        return response
+
 
 class RecipientDetailView(LoginRequiredMixin, DetailView):
     """ Информация о получателе """
@@ -66,6 +81,13 @@ class RecipientDetailView(LoginRequiredMixin, DetailView):
     model = Recipient
     template_name = 'recipient_detail.html'
     context_object_name = 'recipient'
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
 
 
 class RecipientCreateView(LoginRequiredMixin, CreateView):
@@ -165,6 +187,13 @@ class MessageListView(LoginRequiredMixin, ListView):
         else:
             return get_messages_for_owner_from_cache(self.request.user.id)
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
+
 
 class MessageDetailView(LoginRequiredMixin, DetailView):
     """ Информация о письме """
@@ -172,6 +201,13 @@ class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
     template_name = 'message_detail.html'
     context_object_name = 'message'
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
 
 
 class MessageCreateView(LoginRequiredMixin, CreateView):
@@ -252,6 +288,13 @@ class MailingsListView(LoginRequiredMixin, ListView):
             context['show_pagination'] = True
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
+
 
 class MailingsActiveListView(LoginRequiredMixin, ListView):
     """ Список активных рассылок """
@@ -277,6 +320,13 @@ class MailingsActiveListView(LoginRequiredMixin, ListView):
 
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
+
 
 class MailingDetailView(LoginRequiredMixin, DetailView):
     """ Информация о рассылке """
@@ -290,6 +340,13 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['recipients'] = self.object.recipients.all()
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
 
 
 class SendingCreateView(MailingFormMixin, CreateView):
@@ -452,6 +509,13 @@ class AttemptMailingListView(LoginRequiredMixin, ListView):
         """ Попытка рассылки только текущего пользователя """
 
         return get_attempt_mailings_for_owner_from_cache(self.request.user.id)
+
+    def dispatch(self, request, *args, **kwargs):
+        """ Клиентское кэширование """
+
+        response = super().dispatch(request, *args, **kwargs)
+        patch_cache_control(response, max_age=1800)
+        return response
 
 
 
