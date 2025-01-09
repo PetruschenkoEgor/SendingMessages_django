@@ -11,8 +11,21 @@
         </ul>
     </div>
 </div>
+<div class="container">
+
+    {% load custom_filter %}
+
+    {% if not user|has_group:'Менеджеры' %}
+<div class="col-md-6">
+          <div class="card-body">
+            <a href="{% url 'sending_messages:add_sending' %}" class="d-flex align-items-center mb-lg-0 text-decoration-none">
+              <button type="button" class="btn btn-primary btn-lg"  style="width: 90%;">+ Создать новую рассылку</button>
+            </a>
+          </div>
+</div>
+    {% endif %}
 {% if not mailings %}
-<h1 class="display-6 text-center mt-5">Рассылок нет</h1>>
+<h1 class="display-6 text-center mt-5">Рассылок нет</h1>
 {% endif %}
 
 <div class="container">
@@ -20,13 +33,17 @@
 <ul class="list-group mt-5" style="margin-bottom: 15%; width: 100%;">
     {% for mailing in mailings %}
     <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-success" style="background: DarkGray;">
-        <div class="card mb-3" style="width: 100%">
+        <div class="card" style="width: 100%">
             <div class="row g-0">
                 <div class="col-md-10">
                     <div class="card-body">
-                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · отправлено {{ mailing.sending_count }} раз </small></p>
+                        <p class="card-text"><small class="text-body-secondary">id: {{ mailing.id }} · {% if not user|has_group:'Менеджеры' %}отправлено {{ mailing.sending_count }} раз{% else %}пользователь-владелец: {{ mailing.owner.email }} {% endif %}</small></p>
                         <a href="{% url 'sending_messages:mailing_detail' mailing.pk %}">
-                        <h5 class="card-title">Рассылка: {{ mailing.id }}</h5>
+                            {% if mailing.name %}
+                        <h5 class="card-title">Рассылка: {{ mailing.name }}</h5>
+                            {% else %}
+                            <h5 class="card-title">Рассылка: {{ mailing.id }}</h5>
+                            {% endif %}
                             </a>
                         <p class="card-text">Дата и время первой отправки: {{ mailing.date_time_first_shipment }}</p>
                         <p class="card-text">Статус рассылки: {{ mailing.status }}</p>
@@ -34,6 +51,7 @@
                         <p class="card-text">Сообщение: {{ mailing.message.body|truncatechars:150 }}</p>
                     </div>
                 </div>
+                {% if not user|has_group:'Менеджеры' %}
                 <div class="col-md-2 element-center">
                     <div class="element-evenly">
                   <a href="{% url 'sending_messages:send' mailing.pk %}"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
@@ -48,6 +66,7 @@
 </svg></a>
                         </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </li>

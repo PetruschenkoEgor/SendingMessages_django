@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="row">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                <h1 class="display-4" style="margin-left: 8%;">Статистика</h1>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+<ul class="list-group mt-3" style="margin-bottom: 15%; width: 100%;">
+    {% for attempt in attempts %}
+    <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-success" style="background: DarkGray;">
+        <div class="card mb-3" style="width: 100%">
+            <div class="row g-0">
+                <div class="col-md-10">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Попытка рассылки: {{ attempt.id }}</h5>
+                        <p class="card-text">Количество успешных рассылок: {{ attempt.sending_count_ok }}</p>
+                        <p class="card-text">Количество неуспешных рассылок: {{ attempt.sending_count_error }}</p>
+                        <p class="card-text">Количество отправленных сообщений: {{ attempt.count_messages }}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+</div>
+</div>
+{% endblock %}

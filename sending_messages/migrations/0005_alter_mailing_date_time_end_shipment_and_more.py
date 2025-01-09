@@ -6,33 +6,49 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0004_mailing_sender'),
+        ("sending_messages", "0004_mailing_sender"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='mailing',
-            name='date_time_end_shipment',
-            field=models.DateTimeField(auto_now=True, verbose_name='Дата и время окончания отправки'),
+            model_name="mailing",
+            name="date_time_end_shipment",
+            field=models.DateTimeField(auto_now=True, verbose_name="Дата и время окончания отправки"),
         ),
         migrations.AlterField(
-            model_name='mailing',
-            name='recipients',
-            field=models.ManyToManyField(blank=True, help_text='Укажите получателя', null=True, to='sending_messages.recipient', verbose_name='Получатель'),
+            model_name="mailing",
+            name="recipients",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Укажите получателя",
+                null=True,
+                to="sending_messages.recipient",
+                verbose_name="Получатель",
+            ),
         ),
         migrations.AlterField(
-            model_name='recipient',
-            name='email',
-            field=models.EmailField(help_text='Введите Email', max_length=254, unique=True, verbose_name='Email получателя'),
+            model_name="recipient",
+            name="email",
+            field=models.EmailField(
+                help_text="Введите Email", max_length=254, unique=True, verbose_name="Email получателя"
+            ),
         ),
         migrations.AlterField(
-            model_name='recipient',
-            name='fio',
-            field=models.CharField(blank=True, help_text='Введите фамилию, имя, отчество', max_length=300, null=True, verbose_name='Ф.И.О.'),
+            model_name="recipient",
+            name="fio",
+            field=models.CharField(
+                blank=True,
+                help_text="Введите фамилию, имя, отчество",
+                max_length=300,
+                null=True,
+                verbose_name="Ф.И.О.",
+            ),
         ),
         migrations.AlterField(
-            model_name='sender',
-            name='email',
-            field=models.EmailField(help_text='Введите email отправителя', max_length=254, unique=True, verbose_name='Email отправителя'),
+            model_name="sender",
+            name="email",
+            field=models.EmailField(
+                help_text="Введите email отправителя", max_length=254, unique=True, verbose_name="Email отправителя"
+            ),
         ),
     ]
