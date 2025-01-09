@@ -8,14 +8,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0012_mailing_owner_alter_recipient_email'),
+        ("sending_messages", "0012_mailing_owner_alter_recipient_email"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='message',
-            name='owner',
-            field=models.ForeignKey(blank=True, help_text='Укажите владельца', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='messages', to=settings.AUTH_USER_MODEL, verbose_name='Владелец сообщения'),
+            model_name="message",
+            name="owner",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Укажите владельца",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="messages",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Владелец сообщения",
+            ),
         ),
     ]

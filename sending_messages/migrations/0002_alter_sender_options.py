@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0001_initial'),
+        ("sending_messages", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='sender',
-            options={'ordering': ['name'], 'verbose_name': 'Отправитель', 'verbose_name_plural': 'Отправители'},
+            name="sender",
+            options={"ordering": ["name"], "verbose_name": "Отправитель", "verbose_name_plural": "Отправители"},
         ),
     ]

@@ -6,22 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0008_remove_mailing_sender_delete_sender'),
+        ("sending_messages", "0008_remove_mailing_sender_delete_sender"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='attemptmailing',
-            name='sending_count',
+            model_name="attemptmailing",
+            name="sending_count",
         ),
         migrations.AddField(
-            model_name='attemptmailing',
-            name='sending_count_error',
-            field=models.PositiveIntegerField(default=0, verbose_name='Счетчик неуспешных рассылок'),
+            model_name="attemptmailing",
+            name="sending_count_error",
+            field=models.PositiveIntegerField(default=0, verbose_name="Счетчик неуспешных рассылок"),
         ),
         migrations.AddField(
-            model_name='attemptmailing',
-            name='sending_count_ok',
-            field=models.PositiveIntegerField(default=0, verbose_name='Счетчик успешных рассылок'),
+            model_name="attemptmailing",
+            name="sending_count_ok",
+            field=models.PositiveIntegerField(default=0, verbose_name="Счетчик успешных рассылок"),
         ),
     ]

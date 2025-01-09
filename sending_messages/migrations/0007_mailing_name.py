@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0006_attemptmailing_sending_count_recipient_active'),
+        ("sending_messages", "0006_attemptmailing_sending_count_recipient_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mailing',
-            name='name',
-            field=models.CharField(blank=True, help_text='Введите название рассылки', max_length=150, null=True, verbose_name='Название рассылки'),
+            model_name="mailing",
+            name="name",
+            field=models.CharField(
+                blank=True,
+                help_text="Введите название рассылки",
+                max_length=150,
+                null=True,
+                verbose_name="Название рассылки",
+            ),
         ),
     ]

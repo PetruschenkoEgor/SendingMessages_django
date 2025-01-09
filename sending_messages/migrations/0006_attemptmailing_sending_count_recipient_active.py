@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0005_alter_mailing_date_time_end_shipment_and_more'),
+        ("sending_messages", "0005_alter_mailing_date_time_end_shipment_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attemptmailing',
-            name='sending_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Счетчик рассылок'),
+            model_name="attemptmailing",
+            name="sending_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Счетчик рассылок"),
         ),
         migrations.AddField(
-            model_name='recipient',
-            name='active',
-            field=models.BooleanField(default=True, help_text='Укажите активность', verbose_name='Активность'),
+            model_name="recipient",
+            name="active",
+            field=models.BooleanField(default=True, help_text="Укажите активность", verbose_name="Активность"),
         ),
     ]

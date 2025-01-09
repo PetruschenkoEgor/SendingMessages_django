@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sending_messages', '0009_remove_attemptmailing_sending_count_and_more'),
+        ("sending_messages", "0009_remove_attemptmailing_sending_count_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attemptmailing',
-            name='count_messages',
-            field=models.PositiveIntegerField(default=0, verbose_name='Счетчик отправленных сообщений'),
+            model_name="attemptmailing",
+            name="count_messages",
+            field=models.PositiveIntegerField(default=0, verbose_name="Счетчик отправленных сообщений"),
         ),
     ]

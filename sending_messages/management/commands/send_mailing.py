@@ -6,7 +6,7 @@ from sending_messages.models import Message, Recipient
 
 
 class Command(BaseCommand):
-    """ Отправка рассылки через командную строку(последнее сообщение) """
+    """Отправка рассылки через командную строку(последнее сообщение)"""
 
     def handle(self, *args, **options):
         # последнее сообщение по дате создания
@@ -17,4 +17,4 @@ class Command(BaseCommand):
         recipient_list = [recipient.email for recipient in Recipient.objects.filter(active=True)]
 
         send_mail(subject, message, from_email, recipient_list)
-        self.stdout.write(self.style.SUCCESS('Отправлено успешно'))
+        self.stdout.write(self.style.SUCCESS("Отправлено успешно"))
